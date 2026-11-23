@@ -1,0 +1,61 @@
+================================================================================
+EDUTRACK MILESTONE 5 - STEP 2 CORE DAO & DOMAIN MODEL VERIFICATION
+Timestamp: 2026-11-23 13:12:16
+================================================================================
+
+>>> 1. VERIFYING SEED DATA PRESENCE FROM STEP 1 SCHEMA
+[DBConnection] MySQL JDBC Driver registered successfully: com.mysql.cj.jdbc.Driver
+  [PASS] Teacher table contains at least 3 seed records (Found: 3)
+  [PASS] Student table contains at least 3 seed records (Found: 3)
+  [PASS] Class table contains at least 3 seed records (Found: 3)
+  [PASS] Found seed student CS2023001 (Rahul Sharma)
+  [PASS] Found seed teacher alan.turing@edutrack.edu (Dr. Alan Turing)
+  [PASS] Found seed class CS301 assigned to Teacher ID 1
+
+>>> 2. TESTING DOMAIN VALIDATION RULES (InvalidDataException)
+  [PASS] Passed: CGPA 11.50 correctly rejected -> Invalid CGPA: 11.5. CGPA must be between 0.00 and 10.00.
+  [PASS] Passed: Semester 0 correctly rejected -> Invalid semester: 0. Semester must be between 1 and 8.
+  [PASS] Passed: Credits 15 correctly rejected -> Credits must be between 1 and 10.
+  [PASS] Passed: Empty email correctly rejected -> Teacher email cannot be empty.
+
+>>> 3. TESTING TeacherDAO CRUD OPERATIONS
+  [PASS] CREATE Teacher: Auto-increment ID obtained -> 4
+  [PASS] READ Teacher by ID: Found TestProf Vanderbilt
+  [PASS] READ Teacher by Email: Successfully retrieved
+  [PASS] UPDATE Teacher: Modified designation and status
+  [PASS] VERIFY UPDATE: Status is now ON_LEAVE
+  [PASS] Passed: Duplicate email detected -> DuplicateRecordException caught
+  [PASS] DELETE Teacher: Removed test record with ID 4
+  [PASS] VERIFY DELETE: Teacher ID 4 no longer exists
+  [PASS] Passed: RecordNotFoundException correctly caught on non-existent update
+
+>>> 4. TESTING StudentDAO CRUD OPERATIONS
+  [PASS] CREATE Student: Auto-increment ID obtained -> 4
+  [PASS] READ Student by ID: Found roll CS2026TEST
+  [PASS] READ Student by RollNumber: Successfully retrieved
+  [PASS] QUERY Student by Min CGPA >= 9.00: Found 2 students
+  [PASS] UPDATE Student: Updated CGPA to 9.85 and Semester to 7
+  [PASS] VERIFY UPDATE: CGPA persisted as 9.85
+  [PASS] Passed: Duplicate roll number detected -> DuplicateRecordException caught
+  [PASS] SOFT-DELETE Student: Marked status as DROPPED
+  [PASS] VERIFY SOFT-DELETE: Status is DROPPED in database
+  [PASS] HARD-DELETE Student: Removed record ID 4
+  [PASS] VERIFY DELETE: Student ID 4 no longer exists
+
+>>> 5. TESTING ClassDAO CRUD OPERATIONS
+  [PASS] CREATE Class: Auto-increment ID obtained -> 4
+  [PASS] READ Class by ID: Found class code CS999TEST
+  [PASS] READ Class by Code: Successfully retrieved
+  [PASS] QUERY Class by Teacher ID: Found 1 class assigned to instructor
+  [PASS] UPDATE Class: Capacity set to 50, status ONGOING
+  [PASS] VERIFY UPDATE: Class status is now ONGOING
+  [PASS] Passed: Duplicate class code detected -> DuplicateRecordException caught
+  [PASS] DELETE Class: Removed record ID 4
+  [PASS] VERIFY DELETE: Class ID 4 no longer exists
+  [PASS] CLEANUP: Removed temporary instructor ID 6
+
+
+================================================================================
+TEST RUN SUMMARY: Total Tests: 40 | Passed: 40 | Failed: 0
+RESULT: ALL STEP 2 DAO & MODEL TESTS PASSED SUCCESSFULLY!
+================================================================================
