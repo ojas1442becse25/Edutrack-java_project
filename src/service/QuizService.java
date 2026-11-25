@@ -20,10 +20,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
-/**
- * Service Layer class governing quiz authoring, publishing workflows,
- * deadline enforcement, submission processing, and grading calculations.
- */
 public class QuizService {
 
     private final QuizDAO quizDAO;
@@ -49,10 +45,7 @@ public class QuizService {
         this.enrollmentDAO = enrollmentDAO;
     }
 
-    /**
-     * Creates a new quiz after validating associated course existence and marks criteria.
-     */
-    public Quiz createQuiz(Quiz quiz)
+        public Quiz createQuiz(Quiz quiz)
             throws InvalidDataException, RecordNotFoundException, SQLException {
 
         if (quiz == null) {
@@ -67,26 +60,17 @@ public class QuizService {
         return quizDAO.create(quiz);
     }
 
-    /**
-     * Publishes a quiz, making it visible and open for student submissions.
-     */
-    public boolean publishQuiz(int quizId) throws RecordNotFoundException, SQLException, InvalidDataException {
+        public boolean publishQuiz(int quizId) throws RecordNotFoundException, SQLException, InvalidDataException {
         getQuizById(quizId);
         return quizDAO.updateStatus(quizId, QuizStatus.PUBLISHED);
     }
 
-    /**
-     * Closes a quiz to prevent any further student submissions.
-     */
-    public boolean closeQuiz(int quizId) throws RecordNotFoundException, SQLException, InvalidDataException {
+        public boolean closeQuiz(int quizId) throws RecordNotFoundException, SQLException, InvalidDataException {
         getQuizById(quizId);
         return quizDAO.updateStatus(quizId, QuizStatus.CLOSED);
     }
 
-    /**
-     * Finds a quiz by ID.
-     */
-    public Quiz getQuizById(int quizId)
+        public Quiz getQuizById(int quizId)
             throws RecordNotFoundException, SQLException, InvalidDataException {
 
         Optional<Quiz> quiz = quizDAO.findById(quizId);
@@ -96,15 +80,7 @@ public class QuizService {
         return quiz.get();
     }
 
-    /**
-     * Submits a student's quiz attempt with strict business validation:
-     * 1. Quiz must exist and be in PUBLISHED status.
-     * 2. Submission timestamp must be before quiz dueDate (throwing EligibilityException).
-     * 3. Student must be actively enrolled in the course section.
-     * 4. Student must not have already submitted this quiz (prevent duplicate attempts).
-     * 5. Score obtained must be in range [0, totalMarks].
-     */
-    public QuizSubmission submitQuiz(int quizId, int studentId, double scoreObtained, String remarks)
+        public QuizSubmission submitQuiz(int quizId, int studentId, double scoreObtained, String remarks)
             throws RecordNotFoundException, EligibilityException, DuplicateRecordException, InvalidDataException, SQLException {
 
         Quiz quiz = getQuizById(quizId);
@@ -143,20 +119,14 @@ public class QuizService {
         return submissionDAO.submit(submission);
     }
 
-    /**
-     * Evaluates whether a score qualifies as a PASS based on the quiz's passing criteria.
-     */
-    public boolean isPassed(double scoreObtained, int quizId)
+        public boolean isPassed(double scoreObtained, int quizId)
             throws RecordNotFoundException, SQLException, InvalidDataException {
 
         Quiz quiz = getQuizById(quizId);
         return scoreObtained >= quiz.getPassingMarks();
     }
 
-    /**
-     * Records teacher evaluation feedback and updates score.
-     */
-    public boolean evaluateSubmission(int submissionId, double newScore, SubmissionStatus status, String evaluationFeedback)
+        public boolean evaluateSubmission(int submissionId, double newScore, SubmissionStatus status, String evaluationFeedback)
             throws RecordNotFoundException, InvalidDataException, SQLException {
 
         Optional<QuizSubmission> sub = submissionDAO.findById(submissionId);
@@ -172,29 +142,20 @@ public class QuizService {
         return submissionDAO.evaluate(submissionId, newScore, status, evaluationFeedback);
     }
 
-    /**
-     * Retrieves all student submissions for a quiz.
-     */
-    public List<QuizSubmission> getSubmissionsByQuiz(int quizId)
+        public List<QuizSubmission> getSubmissionsByQuiz(int quizId)
             throws RecordNotFoundException, SQLException, InvalidDataException {
 
         getQuizById(quizId);
         return submissionDAO.findByQuizId(quizId);
     }
 
-    /**
-     * Retrieves all quiz submissions for a student.
-     */
-    public List<QuizSubmission> getSubmissionsByStudent(int studentId)
+        public List<QuizSubmission> getSubmissionsByStudent(int studentId)
             throws SQLException, InvalidDataException {
 
         return submissionDAO.findByStudentId(studentId);
     }
 
-    /**
-     * Deletes a quiz.
-     */
-    public boolean deleteQuiz(int quizId) throws RecordNotFoundException, SQLException {
+        public boolean deleteQuiz(int quizId) throws RecordNotFoundException, SQLException {
         return quizDAO.delete(quizId);
     }
 }

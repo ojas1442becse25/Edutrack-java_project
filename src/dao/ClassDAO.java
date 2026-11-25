@@ -17,10 +17,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-/**
- * Data Access Object for the CLASS table.
- * Escapes `CLASS` with backticks in SQL queries to prevent keyword collision.
- */
 public class ClassDAO {
 
     private static final String SQL_INSERT =
@@ -54,10 +50,7 @@ public class ClassDAO {
     private static final String SQL_DELETE =
             "DELETE FROM `CLASS` WHERE class_id = ?";
 
-    /**
-     * Inserts a new ClassEntity into the database and populates the generated class_id.
-     */
-    public ClassEntity create(ClassEntity classEntity) throws SQLException, DuplicateRecordException {
+        public ClassEntity create(ClassEntity classEntity) throws SQLException, DuplicateRecordException {
         if (classEntity == null) {
             throw new IllegalArgumentException("ClassEntity cannot be null.");
         }
@@ -89,6 +82,7 @@ public class ClassDAO {
 
             return classEntity;
         } catch (SQLException e) {
+            // check duplicate key
             if ("23000".equals(e.getSQLState()) || e.getErrorCode() == 1062) {
                 throw new DuplicateRecordException("Duplicate class record: Class code already exists. (" + e.getMessage() + ")", e);
             }
@@ -96,10 +90,7 @@ public class ClassDAO {
         }
     }
 
-    /**
-     * Finds a class by primary key (class_id).
-     */
-    public Optional<ClassEntity> findById(int classId) throws SQLException, InvalidDataException {
+        public Optional<ClassEntity> findById(int classId) throws SQLException, InvalidDataException {
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(SQL_FIND_BY_ID)) {
 
@@ -113,10 +104,7 @@ public class ClassDAO {
         return Optional.empty();
     }
 
-    /**
-     * Finds a class by unique class code (e.g., 'CS301').
-     */
-    public Optional<ClassEntity> findByClassCode(String classCode) throws SQLException, InvalidDataException {
+        public Optional<ClassEntity> findByClassCode(String classCode) throws SQLException, InvalidDataException {
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(SQL_FIND_BY_CODE)) {
 
@@ -130,10 +118,7 @@ public class ClassDAO {
         return Optional.empty();
     }
 
-    /**
-     * Retrieves all classes ordered by class_id.
-     */
-    public List<ClassEntity> findAll() throws SQLException, InvalidDataException {
+        public List<ClassEntity> findAll() throws SQLException, InvalidDataException {
         List<ClassEntity> classes = new ArrayList<>();
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(SQL_FIND_ALL);
@@ -146,10 +131,7 @@ public class ClassDAO {
         return classes;
     }
 
-    /**
-     * Retrieves all classes assigned to a specific teacher.
-     */
-    public List<ClassEntity> findClassesByTeacherId(int teacherId) throws SQLException, InvalidDataException {
+        public List<ClassEntity> findClassesByTeacherId(int teacherId) throws SQLException, InvalidDataException {
         List<ClassEntity> classes = new ArrayList<>();
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(SQL_FIND_BY_TEACHER)) {
@@ -164,10 +146,7 @@ public class ClassDAO {
         return classes;
     }
 
-    /**
-     * Retrieves classes by semester.
-     */
-    public List<ClassEntity> findBySemester(int semester) throws SQLException, InvalidDataException {
+        public List<ClassEntity> findBySemester(int semester) throws SQLException, InvalidDataException {
         List<ClassEntity> classes = new ArrayList<>();
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(SQL_FIND_BY_SEMESTER)) {
@@ -182,10 +161,7 @@ public class ClassDAO {
         return classes;
     }
 
-    /**
-     * Updates an existing class record.
-     */
-    public boolean update(ClassEntity classEntity) throws SQLException, RecordNotFoundException, DuplicateRecordException {
+        public boolean update(ClassEntity classEntity) throws SQLException, RecordNotFoundException, DuplicateRecordException {
         if (classEntity == null || classEntity.getClassId() == null) {
             throw new IllegalArgumentException("ClassEntity and Class ID cannot be null for update.");
         }
@@ -209,6 +185,7 @@ public class ClassDAO {
             }
             return true;
         } catch (SQLException e) {
+            // check duplicate key
             if ("23000".equals(e.getSQLState()) || e.getErrorCode() == 1062) {
                 throw new DuplicateRecordException("Cannot update class: Class code already in use. (" + e.getMessage() + ")", e);
             }
@@ -216,10 +193,7 @@ public class ClassDAO {
         }
     }
 
-    /**
-     * Permanently deletes a class record by class_id.
-     */
-    public boolean delete(int classId) throws SQLException, RecordNotFoundException {
+        public boolean delete(int classId) throws SQLException, RecordNotFoundException {
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(SQL_DELETE)) {
 
@@ -232,10 +206,7 @@ public class ClassDAO {
         }
     }
 
-    /**
-     * Maps ResultSet row to ClassEntity domain model.
-     */
-    private ClassEntity mapResultSetToClass(ResultSet rs) throws SQLException, InvalidDataException {
+        private ClassEntity mapResultSetToClass(ResultSet rs) throws SQLException, InvalidDataException {
         Timestamp ts = rs.getTimestamp("created_at");
         return new ClassEntity(
                 rs.getInt("class_id"),

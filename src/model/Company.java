@@ -4,9 +4,6 @@ import exception.InvalidDataException;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
-/**
- * Domain model representing the COMPANY table.
- */
 public class Company {
 
     public enum CompanyStatus {

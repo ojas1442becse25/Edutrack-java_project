@@ -17,9 +17,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-/**
- * Data Access Object for the QUIZ_SUBMISSION table.
- */
 public class QuizSubmissionDAO {
 
     private static final String SQL_INSERT =
@@ -48,10 +45,7 @@ public class QuizSubmissionDAO {
     private static final String SQL_DELETE =
             "DELETE FROM QUIZ_SUBMISSION WHERE submission_id = ?";
 
-    /**
-     * Submits a quiz response and records the initial score.
-     */
-    public QuizSubmission submit(QuizSubmission submission) throws SQLException, DuplicateRecordException {
+        public QuizSubmission submit(QuizSubmission submission) throws SQLException, DuplicateRecordException {
         if (submission == null) {
             throw new IllegalArgumentException("QuizSubmission cannot be null.");
         }
@@ -78,6 +72,7 @@ public class QuizSubmissionDAO {
             }
             return submission;
         } catch (SQLException e) {
+            // check duplicate key
             if ("23000".equals(e.getSQLState()) || e.getErrorCode() == 1062) {
                 throw new DuplicateRecordException("Student has already submitted this quiz: " + e.getMessage(), e);
             }
@@ -85,10 +80,7 @@ public class QuizSubmissionDAO {
         }
     }
 
-    /**
-     * Finds a submission by ID.
-     */
-    public Optional<QuizSubmission> findById(int submissionId) throws SQLException, InvalidDataException {
+        public Optional<QuizSubmission> findById(int submissionId) throws SQLException, InvalidDataException {
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(SQL_FIND_BY_ID)) {
 
@@ -102,10 +94,7 @@ public class QuizSubmissionDAO {
         return Optional.empty();
     }
 
-    /**
-     * Retrieves all student submissions for a specific quiz.
-     */
-    public List<QuizSubmission> findByQuizId(int quizId) throws SQLException, InvalidDataException {
+        public List<QuizSubmission> findByQuizId(int quizId) throws SQLException, InvalidDataException {
         List<QuizSubmission> list = new ArrayList<>();
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(SQL_FIND_BY_QUIZ)) {
@@ -120,10 +109,7 @@ public class QuizSubmissionDAO {
         return list;
     }
 
-    /**
-     * Retrieves all quiz submissions made by a specific student.
-     */
-    public List<QuizSubmission> findByStudentId(int studentId) throws SQLException, InvalidDataException {
+        public List<QuizSubmission> findByStudentId(int studentId) throws SQLException, InvalidDataException {
         List<QuizSubmission> list = new ArrayList<>();
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(SQL_FIND_BY_STUDENT)) {
@@ -138,10 +124,7 @@ public class QuizSubmissionDAO {
         return list;
     }
 
-    /**
-     * Finds a specific student's submission for a quiz.
-     */
-    public Optional<QuizSubmission> findByQuizAndStudent(int quizId, int studentId) throws SQLException, InvalidDataException {
+        public Optional<QuizSubmission> findByQuizAndStudent(int quizId, int studentId) throws SQLException, InvalidDataException {
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(SQL_FIND_BY_QUIZ_AND_STUDENT)) {
 
@@ -156,10 +139,7 @@ public class QuizSubmissionDAO {
         return Optional.empty();
     }
 
-    /**
-     * Updates the evaluation marks, status, and remarks for a quiz submission.
-     */
-    public boolean evaluate(int submissionId, double score, SubmissionStatus status, String remarks)
+        public boolean evaluate(int submissionId, double score, SubmissionStatus status, String remarks)
             throws SQLException, RecordNotFoundException {
 
         try (Connection conn = DBConnection.getConnection();
@@ -178,10 +158,7 @@ public class QuizSubmissionDAO {
         }
     }
 
-    /**
-     * Deletes a submission by ID.
-     */
-    public boolean delete(int submissionId) throws SQLException, RecordNotFoundException {
+        public boolean delete(int submissionId) throws SQLException, RecordNotFoundException {
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(SQL_DELETE)) {
 

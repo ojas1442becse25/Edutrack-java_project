@@ -4,9 +4,6 @@ import exception.InvalidDataException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
-/**
- * Domain model representing the PLACEMENT_DRIVE table.
- */
 public class PlacementDrive {
 
     public enum DriveStatus {

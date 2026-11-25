@@ -17,9 +17,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-/**
- * Data Access Object for the COMPANY table.
- */
 public class CompanyDAO {
 
     private static final String SQL_INSERT =
@@ -53,10 +50,7 @@ public class CompanyDAO {
     private static final String SQL_DELETE =
             "DELETE FROM COMPANY WHERE company_id = ?";
 
-    /**
-     * Inserts a new Company into the database.
-     */
-    public Company create(Company company) throws SQLException, DuplicateRecordException {
+        public Company create(Company company) throws SQLException, DuplicateRecordException {
         if (company == null) {
             throw new IllegalArgumentException("Company entity cannot be null.");
         }
@@ -87,6 +81,7 @@ public class CompanyDAO {
             }
             return company;
         } catch (SQLException e) {
+            // check duplicate key
             if ("23000".equals(e.getSQLState()) || e.getErrorCode() == 1062) {
                 throw new DuplicateRecordException("Company with this name or email already exists. (" + e.getMessage() + ")", e);
             }
@@ -94,10 +89,7 @@ public class CompanyDAO {
         }
     }
 
-    /**
-     * Finds a company by primary key.
-     */
-    public Optional<Company> findById(int companyId) throws SQLException, InvalidDataException {
+        public Optional<Company> findById(int companyId) throws SQLException, InvalidDataException {
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(SQL_FIND_BY_ID)) {
 
@@ -111,10 +103,7 @@ public class CompanyDAO {
         return Optional.empty();
     }
 
-    /**
-     * Finds a company by unique company name.
-     */
-    public Optional<Company> findByName(String companyName) throws SQLException, InvalidDataException {
+        public Optional<Company> findByName(String companyName) throws SQLException, InvalidDataException {
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(SQL_FIND_BY_NAME)) {
 
@@ -128,10 +117,7 @@ public class CompanyDAO {
         return Optional.empty();
     }
 
-    /**
-     * Finds a company by contact email.
-     */
-    public Optional<Company> findByEmail(String contactEmail) throws SQLException, InvalidDataException {
+        public Optional<Company> findByEmail(String contactEmail) throws SQLException, InvalidDataException {
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(SQL_FIND_BY_EMAIL)) {
 
@@ -145,10 +131,7 @@ public class CompanyDAO {
         return Optional.empty();
     }
 
-    /**
-     * Retrieves all companies.
-     */
-    public List<Company> findAll() throws SQLException, InvalidDataException {
+        public List<Company> findAll() throws SQLException, InvalidDataException {
         List<Company> list = new ArrayList<>();
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(SQL_FIND_ALL);
@@ -161,10 +144,7 @@ public class CompanyDAO {
         return list;
     }
 
-    /**
-     * Retrieves companies filtered by status.
-     */
-    public List<Company> findByStatus(CompanyStatus status) throws SQLException, InvalidDataException {
+        public List<Company> findByStatus(CompanyStatus status) throws SQLException, InvalidDataException {
         List<Company> list = new ArrayList<>();
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(SQL_FIND_BY_STATUS)) {
@@ -179,10 +159,7 @@ public class CompanyDAO {
         return list;
     }
 
-    /**
-     * Updates an existing company record.
-     */
-    public boolean update(Company company) throws SQLException, RecordNotFoundException, DuplicateRecordException {
+        public boolean update(Company company) throws SQLException, RecordNotFoundException, DuplicateRecordException {
         if (company == null || company.getCompanyId() == null) {
             throw new IllegalArgumentException("Company and Company ID cannot be null for update.");
         }
@@ -206,6 +183,7 @@ public class CompanyDAO {
             }
             return true;
         } catch (SQLException e) {
+            // check duplicate key
             if ("23000".equals(e.getSQLState()) || e.getErrorCode() == 1062) {
                 throw new DuplicateRecordException("Cannot update company: Name or email already in use. (" + e.getMessage() + ")", e);
             }
@@ -213,10 +191,7 @@ public class CompanyDAO {
         }
     }
 
-    /**
-     * Permanently deletes a company by ID.
-     */
-    public boolean delete(int companyId) throws SQLException, RecordNotFoundException {
+        public boolean delete(int companyId) throws SQLException, RecordNotFoundException {
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(SQL_DELETE)) {
 

@@ -26,10 +26,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-/**
- * Service Layer class coordinating course management, student enrollment with atomic audit logging,
- * syllabus progress tracking, resource repository, and early-warning at-risk student detection.
- */
 public class ClassService {
 
     private final ClassDAO classDAO;
@@ -59,10 +55,7 @@ public class ClassService {
         this.resourceDAO = resourceDAO;
     }
 
-    /**
-     * Creates a new course section after validating teacher existence and class code uniqueness.
-     */
-    public ClassEntity createClass(ClassEntity classEntity)
+        public ClassEntity createClass(ClassEntity classEntity)
             throws InvalidDataException, DuplicateRecordException, RecordNotFoundException, SQLException {
 
         if (classEntity == null) {
@@ -84,10 +77,7 @@ public class ClassService {
         return classDAO.create(classEntity);
     }
 
-    /**
-     * Retrieves a class by primary key.
-     */
-    public ClassEntity getClassById(int classId)
+        public ClassEntity getClassById(int classId)
             throws RecordNotFoundException, SQLException, InvalidDataException {
 
         Optional<ClassEntity> ce = classDAO.findById(classId);
@@ -97,24 +87,11 @@ public class ClassService {
         return ce.get();
     }
 
-    /**
-     * Retrieves all course sections.
-     */
-    public List<ClassEntity> getAllClasses() throws SQLException, InvalidDataException {
+        public List<ClassEntity> getAllClasses() throws SQLException, InvalidDataException {
         return classDAO.findAll();
     }
 
-    /**
-     * Enrolls a student into a course using the multi-step atomic transaction pattern
-     * with an automatic AUDIT_LOG entry.
-     *
-     * Business Rules:
-     * 1. Class must exist and be in SCHEDULED or ONGOING status.
-     * 2. Class must not have exceeded its max_capacity.
-     * 3. Student must exist and have ACTIVE academic status.
-     * 4. Student must not already be enrolled.
-     */
-    public ClassEnrollment enrollStudent(int classId, int studentId, String performedBy)
+        public ClassEnrollment enrollStudent(int classId, int studentId, String performedBy)
             throws RecordNotFoundException, EligibilityException, DuplicateRecordException, InvalidDataException, SQLException {
 
         ClassEntity classEntity = getClassById(classId);
@@ -152,10 +129,7 @@ public class ClassService {
         return enrollmentDAO.enrollStudentWithAudit(enrollment, performedBy);
     }
 
-    /**
-     * Updates attendance percentage and assigned letter grade for an enrollment.
-     */
-    public boolean updateAttendanceAndGrade(int enrollmentId, double attendance, String grade)
+        public boolean updateAttendanceAndGrade(int enrollmentId, double attendance, String grade)
             throws InvalidDataException, RecordNotFoundException, SQLException {
 
         if (attendance < 0.00 || attendance > 100.00) {
@@ -170,10 +144,7 @@ public class ClassService {
         return enrollmentDAO.updateAttendanceAndGrade(enrollmentId, attendance, grade);
     }
 
-    /**
-     * Logs daily syllabus coverage and teaching hours.
-     */
-    public ClassProgressLog logProgress(int classId, LocalDate logDate, String topic, double hours, String remarks)
+        public ClassProgressLog logProgress(int classId, LocalDate logDate, String topic, double hours, String remarks)
             throws RecordNotFoundException, InvalidDataException, SQLException {
 
         getClassById(classId); // Verify class exists
@@ -181,20 +152,14 @@ public class ClassService {
         return progressLogDAO.create(log);
     }
 
-    /**
-     * Retrieves all syllabus progress logs for a course section.
-     */
-    public List<ClassProgressLog> getProgressLogs(int classId)
+        public List<ClassProgressLog> getProgressLogs(int classId)
             throws RecordNotFoundException, SQLException, InvalidDataException {
 
         getClassById(classId);
         return progressLogDAO.findByClassId(classId);
     }
 
-    /**
-     * Uploads and shares course material metadata (Syllabus, Notes, Slides, Video, etc.).
-     */
-    public ClassResource addResource(int classId, String title, ResourceType type, String url)
+        public ClassResource addResource(int classId, String title, ResourceType type, String url)
             throws RecordNotFoundException, InvalidDataException, SQLException {
 
         getClassById(classId);
@@ -202,21 +167,14 @@ public class ClassService {
         return resourceDAO.create(resource);
     }
 
-    /**
-     * Retrieves learning resources uploaded for a class.
-     */
-    public List<ClassResource> getResources(int classId)
+        public List<ClassResource> getResources(int classId)
             throws RecordNotFoundException, SQLException, InvalidDataException {
 
         getClassById(classId);
         return resourceDAO.findByClassId(classId);
     }
 
-    /**
-     * Early-warning detection: Identifies at-risk students in a class whose attendance
-     * falls below 60% or who have received a failing grade ('F').
-     */
-    public List<AtRiskStudentReport> getAtRiskStudents(int classId)
+        public List<AtRiskStudentReport> getAtRiskStudents(int classId)
             throws RecordNotFoundException, SQLException, InvalidDataException {
 
         ClassEntity classEntity = getClassById(classId);
@@ -247,17 +205,11 @@ public class ClassService {
         return atRiskList;
     }
 
-    /**
-     * Deletes a course section.
-     */
-    public boolean deleteClass(int classId) throws RecordNotFoundException, SQLException {
+        public boolean deleteClass(int classId) throws RecordNotFoundException, SQLException {
         return classDAO.delete(classId);
     }
 
-    /**
-     * DTO representing an at-risk student flagged for academic intervention.
-     */
-    public static class AtRiskStudentReport {
+        public static class AtRiskStudentReport {
         private final int enrollmentId;
         private final int classId;
         private final String classCode;

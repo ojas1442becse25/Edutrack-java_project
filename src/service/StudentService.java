@@ -18,23 +18,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-/**
- * ============================================================================
- * VIVA EVALUATION REFERENCE - 3-LAYER ARCHITECTURE (SERVICE LAYER):
- * ============================================================================
- * 1. PURPOSE OF THE SERVICE LAYER:
- *    The Service Layer acts as the orchestrator and business rule guardian of the
- *    system. It decouples the Presentation Layer (Menus/UI) from data storage details
- *    (DAOs and Database).
- *
- * 2. ARCHITECTURAL BOUNDARY RULES:
- *    - Service classes NEVER contain raw SQL strings (SELECT/INSERT/UPDATE/DELETE).
- *    - Service classes NEVER import or manage java.sql.Connection or PreparedStatement.
- *    - All database reads and writes are delegated entirely to the DAO Layer.
- *    - Service methods accept domain models or primitives and enforce business logic,
- *      eligibility calculations, and cross-entity validation before triggering DAOs.
- * ============================================================================
- */
 public class StudentService {
 
     private final StudentDAO studentDAO;
@@ -57,9 +40,6 @@ public class StudentService {
         this.submissionDAO = submissionDAO;
     }
 
-    /**
-     * Registers a new student after enforcing domain validation rules.
-     */
     public Student registerStudent(Student student)
             throws InvalidDataException, DuplicateRecordException, SQLException {
 
@@ -81,9 +61,6 @@ public class StudentService {
         return studentDAO.create(student);
     }
 
-    /**
-     * Updates an existing student record after validating business constraints.
-     */
     public boolean updateStudent(Student student)
             throws InvalidDataException, DuplicateRecordException, RecordNotFoundException, SQLException {
 
@@ -100,9 +77,6 @@ public class StudentService {
         return studentDAO.update(student);
     }
 
-    /**
-     * Finds a student by primary key ID.
-     */
     public Student getStudentById(int studentId)
             throws RecordNotFoundException, SQLException, InvalidDataException {
 
@@ -113,9 +87,6 @@ public class StudentService {
         return student.get();
     }
 
-    /**
-     * Finds a student by unique roll number.
-     */
     public Student getStudentByRollNumber(String rollNumber)
             throws RecordNotFoundException, SQLException, InvalidDataException {
 
@@ -129,16 +100,10 @@ public class StudentService {
         return student.get();
     }
 
-    /**
-     * Retrieves all registered students.
-     */
     public List<Student> getAllStudents() throws SQLException, InvalidDataException {
         return studentDAO.findAll();
     }
 
-    /**
-     * Retrieves students belonging to a specified department.
-     */
     public List<Student> getStudentsByDepartment(String department)
             throws InvalidDataException, SQLException {
 
@@ -148,9 +113,6 @@ public class StudentService {
         return studentDAO.findByDepartment(department.trim());
     }
 
-    /**
-     * Retrieves all course sections (ClassEntity) currently enrolled by a student.
-     */
     public List<ClassEntity> getEnrolledClasses(int studentId)
             throws RecordNotFoundException, SQLException, InvalidDataException {
 
@@ -167,9 +129,6 @@ public class StudentService {
         return classes;
     }
 
-    /**
-     * Computes a comprehensive academic performance summary for a student.
-     */
     public StudentAcademicSummary getAcademicSummary(int studentId)
             throws RecordNotFoundException, SQLException, InvalidDataException {
 
@@ -208,23 +167,14 @@ public class StudentService {
         );
     }
 
-    /**
-     * Soft-deletes a student by changing their status to DROPPED.
-     */
     public boolean softDeleteStudent(int studentId) throws RecordNotFoundException, SQLException {
         return studentDAO.softDelete(studentId);
     }
 
-    /**
-     * Permanently deletes a student record.
-     */
     public boolean deleteStudent(int studentId) throws RecordNotFoundException, SQLException {
         return studentDAO.delete(studentId);
     }
 
-    /**
-     * DTO containing aggregated academic metrics for a student.
-     */
     public static class StudentAcademicSummary {
         private final int studentId;
         private final String rollNumber;

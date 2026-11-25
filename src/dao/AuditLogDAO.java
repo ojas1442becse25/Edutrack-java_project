@@ -16,10 +16,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-/**
- * Data Access Object for the AUDIT_LOG table.
- * Supports standalone inserts and overloaded connection-aware inserts for atomic transactions.
- */
 public class AuditLogDAO {
 
     private static final String SQL_INSERT =
@@ -41,16 +37,7 @@ public class AuditLogDAO {
     private static final String SQL_DELETE =
             "DELETE FROM AUDIT_LOG WHERE log_id = ?";
 
-    /**
-     * Inserts an audit log record using an existing active Connection (part of an atomic transaction).
-     * The caller manages commit/rollback and connection closing.
-     *
-     * @param conn the active transaction connection.
-     * @param log  the AuditLog entry.
-     * @return the AuditLog with generated log_id populated.
-     * @throws SQLException if insert fails.
-     */
-    public AuditLog insert(Connection conn, AuditLog log) throws SQLException {
+        public AuditLog insert(Connection conn, AuditLog log) throws SQLException {
         if (conn == null) {
             throw new IllegalArgumentException("Connection cannot be null for transactional insert.");
         }
@@ -79,19 +66,13 @@ public class AuditLogDAO {
         }
     }
 
-    /**
-     * Inserts an audit log entry using a standalone connection.
-     */
-    public AuditLog create(AuditLog log) throws SQLException {
+        public AuditLog create(AuditLog log) throws SQLException {
         try (Connection conn = DBConnection.getConnection()) {
             return insert(conn, log);
         }
     }
 
-    /**
-     * Finds an audit log by primary key (log_id).
-     */
-    public Optional<AuditLog> findById(int logId) throws SQLException, InvalidDataException {
+        public Optional<AuditLog> findById(int logId) throws SQLException, InvalidDataException {
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(SQL_FIND_BY_ID)) {
 
@@ -105,12 +86,7 @@ public class AuditLogDAO {
         return Optional.empty();
     }
 
-    /**
-     * Retrieves the most recent audit logs.
-     *
-     * @param limit maximum number of logs to return.
-     */
-    public List<AuditLog> findRecent(int limit) throws SQLException, InvalidDataException {
+        public List<AuditLog> findRecent(int limit) throws SQLException, InvalidDataException {
         List<AuditLog> logs = new ArrayList<>();
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(SQL_FIND_RECENT)) {
@@ -125,10 +101,7 @@ public class AuditLogDAO {
         return logs;
     }
 
-    /**
-     * Retrieves audit logs for a specific entity.
-     */
-    public List<AuditLog> findByEntity(String entityName, int entityId) throws SQLException, InvalidDataException {
+        public List<AuditLog> findByEntity(String entityName, int entityId) throws SQLException, InvalidDataException {
         List<AuditLog> logs = new ArrayList<>();
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(SQL_FIND_BY_ENTITY)) {
@@ -144,10 +117,7 @@ public class AuditLogDAO {
         return logs;
     }
 
-    /**
-     * Deletes an audit log by ID.
-     */
-    public boolean delete(int logId) throws SQLException, RecordNotFoundException {
+        public boolean delete(int logId) throws SQLException, RecordNotFoundException {
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(SQL_DELETE)) {
 

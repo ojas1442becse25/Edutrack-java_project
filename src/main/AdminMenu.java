@@ -25,11 +25,6 @@ import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.List;
 
-/**
- * Presentation Layer: University & Placement Administration Console.
- * Manages corporate recruiter onboarding, placement drives, application review,
- * and system audit log verification.
- */
 public class AdminMenu {
 
     private final PlacementService placementService;

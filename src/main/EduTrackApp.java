@@ -12,16 +12,6 @@ import util.MenuUtils;
 
 import java.util.Scanner;
 
-/**
- * ============================================================================
- * EDUTRACK: ACADEMIC & CAMPUS PLACEMENT MANAGEMENT SYSTEM
- * Milestone 5: Core Java (Java 8+) + MySQL 8.0 Console Application
- * Architecture: 3-Layer (Presentation -> Service -> DAO -> MySQL)
- * ============================================================================
- * Application Entry Point.
- * Initializes services, verifies database connectivity, and routes users
- * to their respective role-based dashboards.
- */
 public class EduTrackApp {
 
     public static void main(String[] args) {
@@ -30,15 +20,15 @@ public class EduTrackApp {
 
         MenuUtils.printAppLogo();
 
-        // 1. Verify Database Connectivity on startup
-        System.out.println("[BOOT] Initializing database connection pool...");
+        // verify db connection
+        System.out.println("Checking database connection...");
         boolean connected = DBConnection.testConnection();
         if (!connected) {
-            System.err.println(MenuUtils.errorBanner("Unable to establish MySQL connection. Please check database service & credentials."));
+            System.err.println(MenuUtils.errorBanner("Unable to connect to MySQL database."));
             System.exit(1);
         }
 
-        // 2. Initialize Service Layer dependencies (Strict 3-Layer separation)
+        // init services
         StudentService studentService = new StudentService();
         TeacherService teacherService = new TeacherService();
         ClassService classService = new ClassService();
@@ -46,12 +36,12 @@ public class EduTrackApp {
         PlacementService placementService = new PlacementService();
         AuditService auditService = new AuditService();
 
-        // 3. Initialize Presentation Menus
+        // init menus
         TeacherMenu teacherMenu = new TeacherMenu(teacherService, classService, quizService, validator);
         StudentMenu studentMenu = new StudentMenu(studentService, classService, quizService, placementService, validator);
         AdminMenu adminMenu = new AdminMenu(placementService, studentService, teacherService, auditService, validator);
 
-        // 4. Main Application Role-Selection Loop
+        // main loop
         boolean running = true;
         while (running) {
             try {
@@ -74,11 +64,10 @@ public class EduTrackApp {
                         break;
                     case 4:
                         running = false;
-                        System.out.println("\n" + MenuUtils.successBanner("Thank you for using EduTrack. Session terminated safely. Goodbye!"));
+                        System.out.println("\n" + MenuUtils.successBanner("Thank you for using EduTrack. Goodbye!"));
                         break;
                 }
             } catch (Exception e) {
-                // Safeguard against unhandled exceptions bubbling up to JVM
                 System.err.println(MenuUtils.errorBanner("An unexpected error occurred: " + e.getMessage()));
             }
         }

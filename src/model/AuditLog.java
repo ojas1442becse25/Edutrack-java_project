@@ -3,9 +3,6 @@ package model;
 import exception.InvalidDataException;
 import java.time.LocalDateTime;
 
-/**
- * Domain model representing the AUDIT_LOG table.
- */
 public class AuditLog {
 
     public enum ActionType {

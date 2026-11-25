@@ -16,9 +16,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-/**
- * Data Access Object for the CLASS_RESOURCE table.
- */
 public class ClassResourceDAO {
 
     private static final String SQL_INSERT =
@@ -39,10 +36,7 @@ public class ClassResourceDAO {
     private static final String SQL_DELETE =
             "DELETE FROM CLASS_RESOURCE WHERE resource_id = ?";
 
-    /**
-     * Uploads/persists course resource metadata into the database.
-     */
-    public ClassResource create(ClassResource resource) throws SQLException {
+        public ClassResource create(ClassResource resource) throws SQLException {
         if (resource == null) {
             throw new IllegalArgumentException("ClassResource cannot be null.");
         }
@@ -69,10 +63,7 @@ public class ClassResourceDAO {
         }
     }
 
-    /**
-     * Finds a resource by ID.
-     */
-    public Optional<ClassResource> findById(int resourceId) throws SQLException, InvalidDataException {
+        public Optional<ClassResource> findById(int resourceId) throws SQLException, InvalidDataException {
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(SQL_FIND_BY_ID)) {
 
@@ -86,10 +77,7 @@ public class ClassResourceDAO {
         return Optional.empty();
     }
 
-    /**
-     * Retrieves all resources uploaded for a specific class.
-     */
-    public List<ClassResource> findByClassId(int classId) throws SQLException, InvalidDataException {
+        public List<ClassResource> findByClassId(int classId) throws SQLException, InvalidDataException {
         List<ClassResource> list = new ArrayList<>();
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(SQL_FIND_BY_CLASS)) {
@@ -104,10 +92,7 @@ public class ClassResourceDAO {
         return list;
     }
 
-    /**
-     * Updates an existing resource's metadata.
-     */
-    public boolean update(ClassResource resource) throws SQLException, RecordNotFoundException {
+        public boolean update(ClassResource resource) throws SQLException, RecordNotFoundException {
         if (resource == null || resource.getResourceId() == null) {
             throw new IllegalArgumentException("Resource and Resource ID cannot be null for update.");
         }
@@ -128,10 +113,7 @@ public class ClassResourceDAO {
         }
     }
 
-    /**
-     * Deletes a resource by ID.
-     */
-    public boolean delete(int resourceId) throws SQLException, RecordNotFoundException {
+        public boolean delete(int resourceId) throws SQLException, RecordNotFoundException {
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(SQL_DELETE)) {
 

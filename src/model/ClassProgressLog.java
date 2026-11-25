@@ -4,9 +4,6 @@ import exception.InvalidDataException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
-/**
- * Domain model representing the CLASS_PROGRESS_LOG table.
- */
 public class ClassProgressLog {
 
     private Integer logId;

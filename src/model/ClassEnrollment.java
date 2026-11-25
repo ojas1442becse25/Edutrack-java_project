@@ -8,9 +8,6 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
-/**
- * Domain model representing the CLASS_ENROLLMENT table.
- */
 public class ClassEnrollment {
 
     public enum EnrollmentStatus {

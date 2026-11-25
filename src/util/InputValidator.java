@@ -6,11 +6,6 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.Scanner;
 
-/**
- * Robust, user-friendly console input utility.
- * Wraps java.util.Scanner to catch invalid data formats, malformed types,
- * and boundary violations gracefully, re-prompting the user without crashing.
- */
 public class InputValidator {
 
     private final Scanner scanner;
@@ -21,10 +16,7 @@ public class InputValidator {
         this.scanner = scanner != null ? scanner : new Scanner(System.in);
     }
 
-    /**
-     * Reads an integer within the specified inclusive range [min, max].
-     */
-    public int readInt(String prompt, int min, int max) {
+        public int readInt(String prompt, int min, int max) {
         while (true) {
             System.out.print(prompt);
             String input = scanner.nextLine().trim();
@@ -40,17 +32,11 @@ public class InputValidator {
         }
     }
 
-    /**
-     * Reads any valid integer.
-     */
-    public int readInt(String prompt) {
+        public int readInt(String prompt) {
         return readInt(prompt, Integer.MIN_VALUE, Integer.MAX_VALUE);
     }
 
-    /**
-     * Reads a double value within the specified inclusive range [min, max].
-     */
-    public double readDouble(String prompt, double min, double max) {
+        public double readDouble(String prompt, double min, double max) {
         while (true) {
             System.out.print(prompt);
             String input = scanner.nextLine().trim();
@@ -66,10 +52,7 @@ public class InputValidator {
         }
     }
 
-    /**
-     * Reads a non-empty string, ensuring input is not blank and does not exceed maxLength.
-     */
-    public String readNonEmptyString(String prompt, int maxLength) {
+        public String readNonEmptyString(String prompt, int maxLength) {
         while (true) {
             System.out.print(prompt);
             String input = scanner.nextLine().trim();
@@ -85,10 +68,7 @@ public class InputValidator {
         }
     }
 
-    /**
-     * Reads an optional string (can be empty), returning fallback if empty.
-     */
-    public String readOptionalString(String prompt, String defaultValue, int maxLength) {
+        public String readOptionalString(String prompt, String defaultValue, int maxLength) {
         System.out.print(prompt + (defaultValue != null ? " [Default: " + defaultValue + "]: " : ": "));
         String input = scanner.nextLine().trim();
         if (input.isEmpty()) {
@@ -101,10 +81,7 @@ public class InputValidator {
         return input;
     }
 
-    /**
-     * Reads and validates an email address format.
-     */
-    public String readEmail(String prompt) {
+        public String readEmail(String prompt) {
         while (true) {
             System.out.print(prompt);
             String email = scanner.nextLine().trim();
@@ -115,10 +92,7 @@ public class InputValidator {
         }
     }
 
-    /**
-     * Reads a date in yyyy-MM-dd format.
-     */
-    public LocalDate readDate(String prompt) {
+        public LocalDate readDate(String prompt) {
         while (true) {
             System.out.print(prompt + " (yyyy-MM-dd): ");
             String input = scanner.nextLine().trim();
@@ -130,10 +104,7 @@ public class InputValidator {
         }
     }
 
-    /**
-     * Reads a date-time in yyyy-MM-dd HH:mm format.
-     */
-    public LocalDateTime readDateTime(String prompt) {
+        public LocalDateTime readDateTime(String prompt) {
         while (true) {
             System.out.print(prompt + " (yyyy-MM-dd HH:mm): ");
             String input = scanner.nextLine().trim();
@@ -145,10 +116,7 @@ public class InputValidator {
         }
     }
 
-    /**
-     * Confirms yes/no choice.
-     */
-    public boolean readConfirmation(String prompt) {
+        public boolean readConfirmation(String prompt) {
         while (true) {
             System.out.print(prompt + " (y/n): ");
             String input = scanner.nextLine().trim().toLowerCase();
@@ -162,10 +130,7 @@ public class InputValidator {
         }
     }
 
-    /**
-     * Prompts user to press Enter to continue.
-     */
-    public void pressEnterToContinue() {
+        public void pressEnterToContinue() {
         System.out.print("\nPress [Enter] to continue...");
         scanner.nextLine();
     }

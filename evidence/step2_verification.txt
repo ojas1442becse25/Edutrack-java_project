@@ -1,10 +1,9 @@
 ================================================================================
 EDUTRACK MILESTONE 5 - STEP 2 CORE DAO & DOMAIN MODEL VERIFICATION
-Timestamp: 2026-11-23 13:12:16
+Timestamp: 2026-11-24 20:30:58
 ================================================================================
 
 >>> 1. VERIFYING SEED DATA PRESENCE FROM STEP 1 SCHEMA
-[DBConnection] MySQL JDBC Driver registered successfully: com.mysql.cj.jdbc.Driver
   [PASS] Teacher table contains at least 3 seed records (Found: 3)
   [PASS] Student table contains at least 3 seed records (Found: 3)
   [PASS] Class table contains at least 3 seed records (Found: 3)
@@ -19,18 +18,18 @@ Timestamp: 2026-11-23 13:12:16
   [PASS] Passed: Empty email correctly rejected -> Teacher email cannot be empty.
 
 >>> 3. TESTING TeacherDAO CRUD OPERATIONS
-  [PASS] CREATE Teacher: Auto-increment ID obtained -> 4
+  [PASS] CREATE Teacher: Auto-increment ID obtained -> 8
   [PASS] READ Teacher by ID: Found TestProf Vanderbilt
   [PASS] READ Teacher by Email: Successfully retrieved
   [PASS] UPDATE Teacher: Modified designation and status
   [PASS] VERIFY UPDATE: Status is now ON_LEAVE
   [PASS] Passed: Duplicate email detected -> DuplicateRecordException caught
-  [PASS] DELETE Teacher: Removed test record with ID 4
-  [PASS] VERIFY DELETE: Teacher ID 4 no longer exists
+  [PASS] DELETE Teacher: Removed test record with ID 8
+  [PASS] VERIFY DELETE: Teacher ID 8 no longer exists
   [PASS] Passed: RecordNotFoundException correctly caught on non-existent update
 
 >>> 4. TESTING StudentDAO CRUD OPERATIONS
-  [PASS] CREATE Student: Auto-increment ID obtained -> 4
+  [PASS] CREATE Student: Auto-increment ID obtained -> 12
   [PASS] READ Student by ID: Found roll CS2026TEST
   [PASS] READ Student by RollNumber: Successfully retrieved
   [PASS] QUERY Student by Min CGPA >= 9.00: Found 2 students
@@ -39,20 +38,20 @@ Timestamp: 2026-11-23 13:12:16
   [PASS] Passed: Duplicate roll number detected -> DuplicateRecordException caught
   [PASS] SOFT-DELETE Student: Marked status as DROPPED
   [PASS] VERIFY SOFT-DELETE: Status is DROPPED in database
-  [PASS] HARD-DELETE Student: Removed record ID 4
-  [PASS] VERIFY DELETE: Student ID 4 no longer exists
+  [PASS] HARD-DELETE Student: Removed record ID 12
+  [PASS] VERIFY DELETE: Student ID 12 no longer exists
 
 >>> 5. TESTING ClassDAO CRUD OPERATIONS
-  [PASS] CREATE Class: Auto-increment ID obtained -> 4
+  [PASS] CREATE Class: Auto-increment ID obtained -> 10
   [PASS] READ Class by ID: Found class code CS999TEST
   [PASS] READ Class by Code: Successfully retrieved
   [PASS] QUERY Class by Teacher ID: Found 1 class assigned to instructor
   [PASS] UPDATE Class: Capacity set to 50, status ONGOING
   [PASS] VERIFY UPDATE: Class status is now ONGOING
   [PASS] Passed: Duplicate class code detected -> DuplicateRecordException caught
-  [PASS] DELETE Class: Removed record ID 4
-  [PASS] VERIFY DELETE: Class ID 4 no longer exists
-  [PASS] CLEANUP: Removed temporary instructor ID 6
+  [PASS] DELETE Class: Removed record ID 10
+  [PASS] VERIFY DELETE: Class ID 10 no longer exists
+  [PASS] CLEANUP: Removed temporary instructor ID 10
 
 
 ================================================================================

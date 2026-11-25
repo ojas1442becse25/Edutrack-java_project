@@ -18,10 +18,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-/**
- * Data Access Object for the TEACHER table.
- * Encapsulates full CRUD operations and specialized departmental queries.
- */
 public class TeacherDAO {
 
     private static final String SQL_INSERT =
@@ -51,10 +47,7 @@ public class TeacherDAO {
     private static final String SQL_DELETE =
             "DELETE FROM TEACHER WHERE teacher_id = ?";
 
-    /**
-     * Inserts a new Teacher into the database and populates the auto-increment teacher_id.
-     */
-    public Teacher create(Teacher teacher) throws SQLException, DuplicateRecordException {
+        public Teacher create(Teacher teacher) throws SQLException, DuplicateRecordException {
         if (teacher == null) {
             throw new IllegalArgumentException("Teacher entity cannot be null.");
         }
@@ -86,6 +79,7 @@ public class TeacherDAO {
 
             return teacher;
         } catch (SQLException e) {
+            // check duplicate key
             if ("23000".equals(e.getSQLState()) || e.getErrorCode() == 1062) {
                 throw new DuplicateRecordException("Duplicate teacher record: Email or phone already in use. (" + e.getMessage() + ")", e);
             }
@@ -93,10 +87,7 @@ public class TeacherDAO {
         }
     }
 
-    /**
-     * Finds a teacher by primary key (teacher_id).
-     */
-    public Optional<Teacher> findById(int teacherId) throws SQLException, InvalidDataException {
+        public Optional<Teacher> findById(int teacherId) throws SQLException, InvalidDataException {
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(SQL_FIND_BY_ID)) {
 
@@ -110,10 +101,7 @@ public class TeacherDAO {
         return Optional.empty();
     }
 
-    /**
-     * Finds a teacher by unique email.
-     */
-    public Optional<Teacher> findByEmail(String email) throws SQLException, InvalidDataException {
+        public Optional<Teacher> findByEmail(String email) throws SQLException, InvalidDataException {
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(SQL_FIND_BY_EMAIL)) {
 
@@ -127,10 +115,7 @@ public class TeacherDAO {
         return Optional.empty();
     }
 
-    /**
-     * Retrieves all teachers ordered by teacher_id.
-     */
-    public List<Teacher> findAll() throws SQLException, InvalidDataException {
+        public List<Teacher> findAll() throws SQLException, InvalidDataException {
         List<Teacher> teachers = new ArrayList<>();
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(SQL_FIND_ALL);
@@ -143,10 +128,7 @@ public class TeacherDAO {
         return teachers;
     }
 
-    /**
-     * Retrieves teachers belonging to a specific department.
-     */
-    public List<Teacher> findByDepartment(String department) throws SQLException, InvalidDataException {
+        public List<Teacher> findByDepartment(String department) throws SQLException, InvalidDataException {
         List<Teacher> teachers = new ArrayList<>();
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(SQL_FIND_BY_DEPT)) {
@@ -161,10 +143,7 @@ public class TeacherDAO {
         return teachers;
     }
 
-    /**
-     * Updates an existing teacher record.
-     */
-    public boolean update(Teacher teacher) throws SQLException, RecordNotFoundException, DuplicateRecordException {
+        public boolean update(Teacher teacher) throws SQLException, RecordNotFoundException, DuplicateRecordException {
         if (teacher == null || teacher.getTeacherId() == null) {
             throw new IllegalArgumentException("Teacher and Teacher ID cannot be null for update.");
         }
@@ -188,6 +167,7 @@ public class TeacherDAO {
             }
             return true;
         } catch (SQLException e) {
+            // check duplicate key
             if ("23000".equals(e.getSQLState()) || e.getErrorCode() == 1062) {
                 throw new DuplicateRecordException("Cannot update teacher: Email or phone already in use. (" + e.getMessage() + ")", e);
             }
@@ -195,10 +175,7 @@ public class TeacherDAO {
         }
     }
 
-    /**
-     * Permanently deletes a teacher record by teacher_id.
-     */
-    public boolean delete(int teacherId) throws SQLException, RecordNotFoundException {
+        public boolean delete(int teacherId) throws SQLException, RecordNotFoundException {
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(SQL_DELETE)) {
 
@@ -211,10 +188,7 @@ public class TeacherDAO {
         }
     }
 
-    /**
-     * Maps ResultSet row to Teacher domain model.
-     */
-    private Teacher mapResultSetToTeacher(ResultSet rs) throws SQLException, InvalidDataException {
+        private Teacher mapResultSetToTeacher(ResultSet rs) throws SQLException, InvalidDataException {
         Date hireDate = rs.getDate("hire_date");
         Timestamp ts = rs.getTimestamp("created_at");
         return new Teacher(

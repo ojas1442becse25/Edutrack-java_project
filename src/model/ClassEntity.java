@@ -4,10 +4,6 @@ import exception.InvalidDataException;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
-/**
- * Domain model representing the CLASS table.
- * Named ClassEntity to avoid conflict with Java's java.lang.Class keyword.
- */
 public class ClassEntity {
 
     public enum ClassStatus {

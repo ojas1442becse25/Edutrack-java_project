@@ -26,10 +26,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
-/**
- * Presentation Layer: Faculty / Teacher Console Management Portal.
- * Interacts exclusively through Service classes.
- */
 public class TeacherMenu {
 
     private final TeacherService teacherService;

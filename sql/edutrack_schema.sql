@@ -1,24 +1,9 @@
--- ============================================================================
--- PROJECT: EduTrack - Academic & Placement Tracking System
--- MILESTONE: 5 (Java 8+ Console Application with MySQL & JDBC)
--- ARCHITECTURE: 3-Layer (Presentation -> Service -> DAO -> MySQL)
--- TARGET RDBMS: MySQL 8.0+
--- FILE: sql/edutrack_schema.sql
--- DESCRIPTION: Complete DDL & DML script containing 12 tables, primary keys,
---              foreign keys, unique constraints, check constraints, indexes,
---              and sample test records.
--- ============================================================================
-
--- ----------------------------------------------------------------------------
--- DATABASE CREATION & SETUP
--- ----------------------------------------------------------------------------
 CREATE DATABASE IF NOT EXISTS edutrack_db
     CHARACTER SET utf8mb4
     COLLATE utf8mb4_unicode_ci;
 
 USE edutrack_db;
 
--- Temporarily disable foreign key checks for clean drops
 SET FOREIGN_KEY_CHECKS = 0;
 
 DROP TABLE IF EXISTS AUDIT_LOG;
@@ -36,10 +21,7 @@ DROP TABLE IF EXISTS TEACHER;
 
 SET FOREIGN_KEY_CHECKS = 1;
 
--- ============================================================================
--- 1. TABLE: TEACHER
--- Description: Stores faculty details, department, and teaching status.
--- ============================================================================
+-- Table: TEACHER
 CREATE TABLE TEACHER (
     teacher_id INT AUTO_INCREMENT,
     first_name VARCHAR(50) NOT NULL,
@@ -61,11 +43,7 @@ CREATE TABLE TEACHER (
 CREATE INDEX idx_teacher_dept ON TEACHER (department);
 CREATE INDEX idx_teacher_status ON TEACHER (status);
 
--- ============================================================================
--- 2. TABLE: STUDENT
--- Description: Stores enrolled student profiles, academic performance (CGPA),
---              and semester standing.
--- ============================================================================
+-- Table: STUDENT
 CREATE TABLE STUDENT (
     student_id INT AUTO_INCREMENT,
     roll_number VARCHAR(30) NOT NULL,
@@ -95,11 +73,7 @@ CREATE INDEX idx_student_semester ON STUDENT (semester);
 CREATE INDEX idx_student_cgpa ON STUDENT (cgpa);
 CREATE INDEX idx_student_status ON STUDENT (status);
 
--- ============================================================================
--- 3. TABLE: CLASS
--- Description: Represents academic courses/sections managed by teachers.
--- Note: 'CLASS' is a reserved keyword in SQL and Java, escaped with backticks.
--- ============================================================================
+-- Table: CLASS
 CREATE TABLE `CLASS` (
     class_id INT AUTO_INCREMENT,
     class_code VARCHAR(30) NOT NULL,
@@ -128,11 +102,7 @@ CREATE INDEX idx_class_teacher ON `CLASS` (teacher_id);
 CREATE INDEX idx_class_status ON `CLASS` (status);
 CREATE INDEX idx_class_academic_year ON `CLASS` (academic_year);
 
--- ============================================================================
--- 4. TABLE: CLASS_ENROLLMENT
--- Description: Junction table tracking student enrollment in specific classes,
---              attendance percentages, and assigned final grades.
--- ============================================================================
+-- Table: CLASS_ENROLLMENT
 CREATE TABLE CLASS_ENROLLMENT (
     enrollment_id INT AUTO_INCREMENT,
     class_id INT NOT NULL,
@@ -162,10 +132,7 @@ CREATE INDEX idx_enrollment_class ON CLASS_ENROLLMENT (class_id);
 CREATE INDEX idx_enrollment_student ON CLASS_ENROLLMENT (student_id);
 CREATE INDEX idx_enrollment_status ON CLASS_ENROLLMENT (status);
 
--- ============================================================================
--- 5. TABLE: CLASS_PROGRESS_LOG
--- Description: Logs syllabus progression, daily topics covered, and teaching hours.
--- ============================================================================
+-- Table: CLASS_PROGRESS_LOG
 CREATE TABLE CLASS_PROGRESS_LOG (
     log_id INT AUTO_INCREMENT,
     class_id INT NOT NULL,
@@ -186,10 +153,7 @@ CREATE TABLE CLASS_PROGRESS_LOG (
 CREATE INDEX idx_progress_class ON CLASS_PROGRESS_LOG (class_id);
 CREATE INDEX idx_progress_date ON CLASS_PROGRESS_LOG (log_date);
 
--- ============================================================================
--- 6. TABLE: CLASS_RESOURCE
--- Description: Course materials, syllabus PDFs, lab manuals, and video links.
--- ============================================================================
+-- Table: CLASS_RESOURCE
 CREATE TABLE CLASS_RESOURCE (
     resource_id INT AUTO_INCREMENT,
     class_id INT NOT NULL,
@@ -209,10 +173,7 @@ CREATE TABLE CLASS_RESOURCE (
 CREATE INDEX idx_resource_class ON CLASS_RESOURCE (class_id);
 CREATE INDEX idx_resource_type ON CLASS_RESOURCE (resource_type);
 
--- ============================================================================
--- 7. TABLE: QUIZ
--- Description: Internal assessments and quizzes created for a class.
--- ============================================================================
+-- Table: QUIZ
 CREATE TABLE QUIZ (
     quiz_id INT AUTO_INCREMENT,
     class_id INT NOT NULL,
@@ -237,10 +198,7 @@ CREATE INDEX idx_quiz_class ON QUIZ (class_id);
 CREATE INDEX idx_quiz_status ON QUIZ (status);
 CREATE INDEX idx_quiz_due_date ON QUIZ (due_date);
 
--- ============================================================================
--- 8. TABLE: QUIZ_SUBMISSION
--- Description: Records student performance and marks scored in quizzes.
--- ============================================================================
+-- Table: QUIZ_SUBMISSION
 CREATE TABLE QUIZ_SUBMISSION (
     submission_id INT AUTO_INCREMENT,
     quiz_id INT NOT NULL,
@@ -267,10 +225,7 @@ CREATE TABLE QUIZ_SUBMISSION (
 CREATE INDEX idx_submission_quiz ON QUIZ_SUBMISSION (quiz_id);
 CREATE INDEX idx_submission_student ON QUIZ_SUBMISSION (student_id);
 
--- ============================================================================
--- 9. TABLE: COMPANY
--- Description: Recruiting partners participating in campus placement drives.
--- ============================================================================
+-- Table: COMPANY
 CREATE TABLE COMPANY (
     company_id INT AUTO_INCREMENT,
     company_name VARCHAR(100) NOT NULL,
@@ -292,10 +247,7 @@ CREATE TABLE COMPANY (
 CREATE INDEX idx_company_industry ON COMPANY (industry);
 CREATE INDEX idx_company_status ON COMPANY (status);
 
--- ============================================================================
--- 10. TABLE: PLACEMENT_DRIVE
--- Description: Job openings, packages (LPA), criteria, and interview dates.
--- ============================================================================
+-- Table: PLACEMENT_DRIVE
 CREATE TABLE PLACEMENT_DRIVE (
     drive_id INT AUTO_INCREMENT,
     company_id INT NOT NULL,
@@ -323,10 +275,7 @@ CREATE INDEX idx_drive_company ON PLACEMENT_DRIVE (company_id);
 CREATE INDEX idx_drive_status ON PLACEMENT_DRIVE (status);
 CREATE INDEX idx_drive_date ON PLACEMENT_DRIVE (drive_date);
 
--- ============================================================================
--- 11. TABLE: APPLICATION
--- Description: Tracks student job applications, interview progression & offers.
--- ============================================================================
+-- Table: APPLICATION
 CREATE TABLE APPLICATION (
     application_id INT AUTO_INCREMENT,
     drive_id INT NOT NULL,
@@ -354,11 +303,7 @@ CREATE INDEX idx_app_drive ON APPLICATION (drive_id);
 CREATE INDEX idx_app_student ON APPLICATION (student_id);
 CREATE INDEX idx_app_status ON APPLICATION (status);
 
--- ============================================================================
--- 12. TABLE: AUDIT_LOG
--- Description: System-wide audit trail recording critical actions (INSERT,
---              UPDATE, DELETE, AUTH) for security and accountability.
--- ============================================================================
+-- Table: AUDIT_LOG
 CREATE TABLE AUDIT_LOG (
     log_id INT AUTO_INCREMENT,
     entity_name VARCHAR(50) NOT NULL,
@@ -376,87 +321,81 @@ CREATE INDEX idx_audit_entity ON AUDIT_LOG (entity_name, entity_id);
 CREATE INDEX idx_audit_action ON AUDIT_LOG (action_type);
 CREATE INDEX idx_audit_timestamp ON AUDIT_LOG (action_timestamp);
 
-
--- ============================================================================
--- SAMPLE TEST DATA INSERTIONS (2-3 Records Per Table)
--- ============================================================================
-
--- 1. Insert TEACHER records
+-- Sample Data
+-- TEACHER
 INSERT INTO TEACHER (teacher_id, first_name, last_name, email, phone, department, designation, hire_date, status) VALUES
 (1, 'Dr. Alan', 'Turing', 'alan.turing@edutrack.edu', '+91-9876543210', 'Computer Science', 'Professor', '2018-07-01', 'ACTIVE'),
 (2, 'Dr. Grace', 'Hopper', 'grace.hopper@edutrack.edu', '+91-9876543211', 'Computer Science', 'Associate Professor', '2019-08-15', 'ACTIVE'),
 (3, 'Prof. Claude', 'Shannon', 'claude.shannon@edutrack.edu', '+91-9876543212', 'Information Technology', 'Assistant Professor', '2021-01-10', 'ACTIVE');
 
--- 2. Insert STUDENT records
+-- STUDENT
 INSERT INTO STUDENT (student_id, roll_number, first_name, last_name, email, phone, department, semester, cgpa, enrollment_year, status) VALUES
 (1, 'CS2023001', 'Rahul', 'Sharma', 'rahul.sharma@student.edu', '+91-9123456780', 'Computer Science', 6, 8.75, 2023, 'ACTIVE'),
 (2, 'CS2023002', 'Priya', 'Nair', 'priya.nair@student.edu', '+91-9123456781', 'Computer Science', 6, 9.20, 2023, 'ACTIVE'),
 (3, 'IT2023003', 'Aman', 'Verma', 'aman.verma@student.edu', '+91-9123456782', 'Information Technology', 6, 7.40, 2023, 'ACTIVE');
 
--- 3. Insert CLASS records
+-- CLASS
 INSERT INTO `CLASS` (class_id, class_code, course_name, teacher_id, semester, academic_year, credits, max_capacity, status) VALUES
 (1, 'CS301', 'Advanced Database Management Systems', 1, 6, '2025-2026', 4, 60, 'ONGOING'),
 (2, 'CS302', 'Object Oriented Programming with Java', 2, 6, '2025-2026', 4, 60, 'ONGOING'),
 (3, 'IT305', 'Computer Networks & Security', 3, 6, '2025-2026', 3, 50, 'ONGOING');
 
--- 4. Insert CLASS_ENROLLMENT records
+-- CLASS_ENROLLMENT
 INSERT INTO CLASS_ENROLLMENT (enrollment_id, class_id, student_id, enrollment_date, attendance_percentage, grade, status) VALUES
 (1, 1, 1, '2026-01-05', 92.50, 'A', 'ENROLLED'),
 (2, 1, 2, '2026-01-05', 98.00, 'A+', 'ENROLLED'),
 (3, 2, 3, '2026-01-06', 81.00, 'B+', 'ENROLLED');
 
--- 5. Insert CLASS_PROGRESS_LOG records
+-- CLASS_PROGRESS_LOG
 INSERT INTO CLASS_PROGRESS_LOG (log_id, class_id, log_date, topic_covered, hours_spent, remarks) VALUES
 (1, 1, '2026-02-02', 'Relational Normalization: 1NF to BCNF', 2.00, 'All examples discussed and solved in class.'),
 (2, 1, '2026-02-04', 'Indexing Techniques: B+ Trees and Hashing', 2.00, 'Conducted interactive query execution plan demo.'),
 (3, 2, '2026-02-03', 'JDBC Architecture & 3-Layer Design Pattern', 2.50, 'Demonstrated Connection, Statement, and PreparedStatement.');
 
--- 6. Insert CLASS_RESOURCE records
+-- CLASS_RESOURCE
 INSERT INTO CLASS_RESOURCE (resource_id, class_id, title, resource_type, resource_url) VALUES
 (1, 1, 'DBMS Complete Syllabus & Lab Guidelines', 'SYLLABUS', 'https://edutrack.edu/resources/cs301_syllabus.pdf'),
 (2, 1, 'Lecture Notes - Transaction ACID Properties', 'NOTES', 'https://edutrack.edu/resources/cs301_acid_notes.pdf'),
 (3, 2, 'Java JDBC Best Practices Presentation', 'SLIDES', 'https://edutrack.edu/resources/cs302_jdbc_slides.pptx');
 
--- 7. Insert QUIZ records
+-- QUIZ
 INSERT INTO QUIZ (quiz_id, class_id, title, total_marks, passing_marks, due_date, status) VALUES
 (1, 1, 'Quiz 1: SQL Joins and Aggregations', 25, 10, '2026-02-28 23:59:59', 'PUBLISHED'),
 (2, 1, 'Quiz 2: Transaction Isolation Levels', 20, 8, '2026-03-15 23:59:59', 'PUBLISHED'),
 (3, 2, 'Quiz 1: Java Collections & Exception Handling', 30, 12, '2026-03-01 23:59:59', 'PUBLISHED');
 
--- 8. Insert QUIZ_SUBMISSION records
+-- QUIZ_SUBMISSION
 INSERT INTO QUIZ_SUBMISSION (submission_id, quiz_id, student_id, score_obtained, submission_date, status, remarks) VALUES
 (1, 1, 1, 23.50, '2026-02-25 14:30:00', 'EVALUATED', 'Excellent performance on complex JOIN queries.'),
 (2, 1, 2, 25.00, '2026-02-24 16:45:00', 'EVALUATED', 'Perfect score! Outstanding analytical understanding.'),
 (3, 3, 3, 22.00, '2026-02-27 10:15:00', 'EVALUATED', 'Good effort; review custom exception chaining.');
 
--- 9. Insert COMPANY records
+-- COMPANY
 INSERT INTO COMPANY (company_id, company_name, industry, website, contact_person, contact_email, contact_phone, address, status) VALUES
 (1, 'TechNova Solutions Ltd.', 'Information Technology', 'https://technova.example.com', 'Rajesh Kulkarni', 'hr@technova.example.com', '+91-22-25678901', 'Mindspace Tech Park, Mumbai, MH', 'ACTIVE'),
 (2, 'CloudScale Systems', 'Cloud Infrastructure', 'https://cloudscale.example.com', 'Anita Desai', 'careers@cloudscale.example.com', '+91-80-45678902', 'Whitefield IT Hub, Bengaluru, KA', 'ACTIVE'),
 (3, 'FinPulse Analytics', 'FinTech', 'https://finpulse.example.com', 'Vikram Malhotra', 'talent@finpulse.example.com', '+91-124-3456789', 'Cyber City, Gurugram, HR', 'ACTIVE');
 
--- 10. Insert PLACEMENT_DRIVE records
+-- PLACEMENT_DRIVE
 INSERT INTO PLACEMENT_DRIVE (drive_id, company_id, job_title, job_description, package_lpa, min_cgpa_criteria, eligible_department, drive_date, last_date_to_apply, status) VALUES
 (1, 1, 'Associate Software Engineer - Java Backend', 'Development of scalable REST microservices with Spring Boot and MySQL.', 8.50, 7.50, 'Computer Science, Information Technology', '2026-03-20', '2026-03-10', 'UPCOMING'),
 (2, 2, 'Cloud Infrastructure Engineer', 'Deployment automation, Kubernetes orchestration, and AWS/GCP operations.', 10.00, 8.00, 'Computer Science, Information Technology', '2026-03-25', '2026-03-15', 'UPCOMING'),
 (3, 3, 'Data Analyst / FinTech Engineer', 'Financial data engineering, ETL pipelines, and SQL performance tuning.', 7.50, 7.00, 'ALL', '2026-04-05', '2026-03-25', 'UPCOMING');
 
--- 11. Insert APPLICATION records
+-- APPLICATION
 INSERT INTO APPLICATION (application_id, drive_id, student_id, application_date, status, interview_feedback) VALUES
 (1, 1, 1, '2026-02-15 11:20:00', 'SHORTLISTED', 'Cleared initial online aptitude test with 92% percentile.'),
 (2, 1, 2, '2026-02-15 11:45:00', 'TECHNICAL_ROUND', 'Profile shortlisted; scheduled for Technical Round 1.'),
 (3, 3, 3, '2026-02-16 09:30:00', 'APPLIED', 'Application submitted; awaiting CGPA screening.');
 
--- 12. Insert AUDIT_LOG records
+-- AUDIT_LOG
 INSERT INTO AUDIT_LOG (log_id, entity_name, entity_id, action_type, performed_by, action_timestamp, details) VALUES
 (1, 'SYSTEM', 0, 'INSERT', 'SETUP_SCRIPT', '2026-11-23 12:00:00', 'Initial database schema and seed data deployed successfully.'),
 (2, 'STUDENT', 1, 'INSERT', 'admin@edutrack.edu', '2026-11-23 12:05:00', 'Student Rahul Sharma registered under CS department.'),
 (3, 'PLACEMENT_DRIVE', 1, 'INSERT', 'tpo@edutrack.edu', '2026-11-23 12:10:00', 'Placement drive created for TechNova Solutions Ltd (8.5 LPA).');
 
--- Ensure all changes are committed
 COMMIT;
 
--- Verification summary output
 SELECT 'TEACHER' AS Table_Name, COUNT(*) AS Total_Records FROM TEACHER
 UNION ALL SELECT 'STUDENT', COUNT(*) FROM STUDENT
 UNION ALL SELECT 'CLASS', COUNT(*) FROM `CLASS`

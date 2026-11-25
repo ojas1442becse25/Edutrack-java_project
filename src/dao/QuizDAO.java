@@ -16,9 +16,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-/**
- * Data Access Object for the QUIZ table.
- */
 public class QuizDAO {
 
     private static final String SQL_INSERT =
@@ -46,10 +43,7 @@ public class QuizDAO {
     private static final String SQL_DELETE =
             "DELETE FROM QUIZ WHERE quiz_id = ?";
 
-    /**
-     * Creates a new quiz.
-     */
-    public Quiz create(Quiz quiz) throws SQLException {
+        public Quiz create(Quiz quiz) throws SQLException {
         if (quiz == null) {
             throw new IllegalArgumentException("Quiz cannot be null.");
         }
@@ -78,10 +72,7 @@ public class QuizDAO {
         }
     }
 
-    /**
-     * Finds a quiz by ID.
-     */
-    public Optional<Quiz> findById(int quizId) throws SQLException, InvalidDataException {
+        public Optional<Quiz> findById(int quizId) throws SQLException, InvalidDataException {
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(SQL_FIND_BY_ID)) {
 
@@ -95,10 +86,7 @@ public class QuizDAO {
         return Optional.empty();
     }
 
-    /**
-     * Retrieves all quizzes for a specific class.
-     */
-    public List<Quiz> findByClassId(int classId) throws SQLException, InvalidDataException {
+        public List<Quiz> findByClassId(int classId) throws SQLException, InvalidDataException {
         List<Quiz> list = new ArrayList<>();
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(SQL_FIND_BY_CLASS)) {
@@ -113,10 +101,7 @@ public class QuizDAO {
         return list;
     }
 
-    /**
-     * Retrieves currently active (PUBLISHED) quizzes for a class.
-     */
-    public List<Quiz> findActiveQuizzesByClassId(int classId) throws SQLException, InvalidDataException {
+        public List<Quiz> findActiveQuizzesByClassId(int classId) throws SQLException, InvalidDataException {
         List<Quiz> list = new ArrayList<>();
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(SQL_FIND_ACTIVE_BY_CLASS)) {
@@ -131,10 +116,7 @@ public class QuizDAO {
         return list;
     }
 
-    /**
-     * Publishes or unpublishes a quiz by changing its status (DRAFT, PUBLISHED, CLOSED).
-     */
-    public boolean updateStatus(int quizId, QuizStatus status) throws SQLException, RecordNotFoundException {
+        public boolean updateStatus(int quizId, QuizStatus status) throws SQLException, RecordNotFoundException {
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(SQL_UPDATE_STATUS)) {
 
@@ -149,10 +131,7 @@ public class QuizDAO {
         }
     }
 
-    /**
-     * Updates an existing quiz.
-     */
-    public boolean update(Quiz quiz) throws SQLException, RecordNotFoundException {
+        public boolean update(Quiz quiz) throws SQLException, RecordNotFoundException {
         if (quiz == null || quiz.getQuizId() == null) {
             throw new IllegalArgumentException("Quiz and Quiz ID cannot be null for update.");
         }
@@ -175,10 +154,7 @@ public class QuizDAO {
         }
     }
 
-    /**
-     * Deletes a quiz by ID.
-     */
-    public boolean delete(int quizId) throws SQLException, RecordNotFoundException {
+        public boolean delete(int quizId) throws SQLException, RecordNotFoundException {
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(SQL_DELETE)) {
 

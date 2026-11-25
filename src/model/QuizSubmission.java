@@ -3,9 +3,6 @@ package model;
 import exception.InvalidDataException;
 import java.time.LocalDateTime;
 
-/**
- * Domain model representing the QUIZ_SUBMISSION table.
- */
 public class QuizSubmission {
 
     public enum SubmissionStatus {

@@ -18,9 +18,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-/**
- * Data Access Object for the PLACEMENT_DRIVE table.
- */
 public class PlacementDriveDAO {
 
     private static final String SQL_INSERT =
@@ -59,10 +56,7 @@ public class PlacementDriveDAO {
     private static final String SQL_DELETE =
             "DELETE FROM PLACEMENT_DRIVE WHERE drive_id = ?";
 
-    /**
-     * Inserts a new Placement Drive into the database.
-     */
-    public PlacementDrive create(PlacementDrive drive) throws SQLException, DuplicateRecordException {
+        public PlacementDrive create(PlacementDrive drive) throws SQLException, DuplicateRecordException {
         if (drive == null) {
             throw new IllegalArgumentException("PlacementDrive entity cannot be null.");
         }
@@ -94,6 +88,7 @@ public class PlacementDriveDAO {
             }
             return drive;
         } catch (SQLException e) {
+            // check duplicate key
             if ("23000".equals(e.getSQLState()) || e.getErrorCode() == 1062) {
                 throw new DuplicateRecordException("Duplicate placement drive constraint violation: " + e.getMessage(), e);
             }
@@ -101,10 +96,7 @@ public class PlacementDriveDAO {
         }
     }
 
-    /**
-     * Finds a placement drive by ID.
-     */
-    public Optional<PlacementDrive> findById(int driveId) throws SQLException, InvalidDataException {
+        public Optional<PlacementDrive> findById(int driveId) throws SQLException, InvalidDataException {
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(SQL_FIND_BY_ID)) {
 
@@ -118,10 +110,7 @@ public class PlacementDriveDAO {
         return Optional.empty();
     }
 
-    /**
-     * Retrieves all placement drives.
-     */
-    public List<PlacementDrive> findAll() throws SQLException, InvalidDataException {
+        public List<PlacementDrive> findAll() throws SQLException, InvalidDataException {
         List<PlacementDrive> list = new ArrayList<>();
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(SQL_FIND_ALL);
@@ -134,10 +123,7 @@ public class PlacementDriveDAO {
         return list;
     }
 
-    /**
-     * Retrieves active placement drives (UPCOMING or IN_PROGRESS).
-     */
-    public List<PlacementDrive> findActiveDrives() throws SQLException, InvalidDataException {
+        public List<PlacementDrive> findActiveDrives() throws SQLException, InvalidDataException {
         List<PlacementDrive> list = new ArrayList<>();
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(SQL_FIND_ACTIVE);
@@ -150,10 +136,7 @@ public class PlacementDriveDAO {
         return list;
     }
 
-    /**
-     * Retrieves drives organized by a specific company.
-     */
-    public List<PlacementDrive> findByCompanyId(int companyId) throws SQLException, InvalidDataException {
+        public List<PlacementDrive> findByCompanyId(int companyId) throws SQLException, InvalidDataException {
         List<PlacementDrive> list = new ArrayList<>();
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(SQL_FIND_BY_COMPANY)) {
@@ -168,10 +151,7 @@ public class PlacementDriveDAO {
         return list;
     }
 
-    /**
-     * Updates an existing placement drive record.
-     */
-    public boolean update(PlacementDrive drive) throws SQLException, RecordNotFoundException, DuplicateRecordException {
+        public boolean update(PlacementDrive drive) throws SQLException, RecordNotFoundException, DuplicateRecordException {
         if (drive == null || drive.getDriveId() == null) {
             throw new IllegalArgumentException("PlacementDrive and Drive ID cannot be null for update.");
         }
@@ -196,6 +176,7 @@ public class PlacementDriveDAO {
             }
             return true;
         } catch (SQLException e) {
+            // check duplicate key
             if ("23000".equals(e.getSQLState()) || e.getErrorCode() == 1062) {
                 throw new DuplicateRecordException("Cannot update placement drive: Constraint failure. (" + e.getMessage() + ")", e);
             }
@@ -203,10 +184,7 @@ public class PlacementDriveDAO {
         }
     }
 
-    /**
-     * Updates the status of a placement drive.
-     */
-    public boolean updateStatus(int driveId, DriveStatus newStatus) throws SQLException, RecordNotFoundException {
+        public boolean updateStatus(int driveId, DriveStatus newStatus) throws SQLException, RecordNotFoundException {
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(SQL_UPDATE_STATUS)) {
 
@@ -221,10 +199,7 @@ public class PlacementDriveDAO {
         }
     }
 
-    /**
-     * Permanently deletes a placement drive by ID.
-     */
-    public boolean delete(int driveId) throws SQLException, RecordNotFoundException {
+        public boolean delete(int driveId) throws SQLException, RecordNotFoundException {
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(SQL_DELETE)) {
 

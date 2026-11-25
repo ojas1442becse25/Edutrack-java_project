@@ -19,27 +19,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-/**
- * ============================================================================
- * VIVA EVALUATION REFERENCE - ATOMIC JDBC TRANSACTION MANAGEMENT:
- * ============================================================================
- * 1. WHAT IS AN ATOMIC TRANSACTION (ACID)?
- *    - Atomicity: Guarantees that all operations within the transaction succeed
- *      or all fail. No intermediate or partial state is visible to other threads.
- *    - In this DAO, inserting a student's job APPLICATION and writing an entry to
- *      AUDIT_LOG occur on the exact same physical Connection.
- *
- * 2. TRANSACTION WORKFLOW:
- *    - Step 1: `conn.setAutoCommit(false)` disables MySQL's default autocommit mode,
- *      marking the start of a multi-statement transaction boundary.
- *    - Step 2: Execute SQL statements (INSERT INTO APPLICATION, then INSERT INTO AUDIT_LOG).
- *    - Step 3: `conn.commit()` makes all modifications permanent in the database.
- *    - Step 4 (On Error): `conn.rollback()` in the catch block undoes all uncommitted
- *      changes, leaving the database completely clean.
- *    - Step 5: `conn.setAutoCommit(true)` in the finally block resets the connection
- *      state before returning it to the pool, preventing accidental transaction leaks.
- * ============================================================================
- */
 public class ApplicationDAO {
 
     private static final String SQL_INSERT =
@@ -70,9 +49,6 @@ public class ApplicationDAO {
 
     private final AuditLogDAO auditLogDAO = new AuditLogDAO();
 
-    /**
-     * Standard non-transactional apply method.
-     */
     public Application apply(Application app) throws SQLException, DuplicateRecordException {
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(SQL_INSERT, Statement.RETURN_GENERATED_KEYS)) {
@@ -94,6 +70,7 @@ public class ApplicationDAO {
             }
             return app;
         } catch (SQLException e) {
+            // check duplicate key
             if ("23000".equals(e.getSQLState()) || e.getErrorCode() == 1062) {
                 throw new DuplicateRecordException("Student has already applied to this placement drive: " + e.getMessage(), e);
             }
@@ -101,25 +78,10 @@ public class ApplicationDAO {
         }
     }
 
-    /**
-     * ATOMIC TRANSACTION: Submits a placement APPLICATION AND creates an AUDIT_LOG entry
-     * on the same connection.
-     *
-     * @param app         the application to submit.
-     * @param performedBy the user/service executing the action.
-     * @return the persisted Application with populated ID.
-     */
     public Application applyWithAudit(Application app, String performedBy) throws SQLException, DuplicateRecordException {
         return applyWithAudit(app, performedBy, false);
     }
 
-    /**
-     * ATOMIC TRANSACTION with optional simulated failure to test ROLLBACK behavior.
-     *
-     * @param app             the application to submit.
-     * @param performedBy     the user executing the application.
-     * @param simulateFailure if true, throws an exception after application insert but before commit.
-     */
     public Application applyWithAudit(Application app, String performedBy, boolean simulateFailure)
             throws SQLException, DuplicateRecordException {
 
@@ -131,13 +93,9 @@ public class ApplicationDAO {
         try {
             conn = DBConnection.getConnection();
 
-            /*
-             * VIVA POINT: Disabling auto-commit begins an explicit atomic transaction.
-             * None of the following statements are persisted until commit() is invoked.
-             */
+            // begin transaction
             conn.setAutoCommit(false);
 
-            // Step 1: Insert Application
             try (PreparedStatement ps = conn.prepareStatement(SQL_INSERT, Statement.RETURN_GENERATED_KEYS)) {
                 ps.setInt(1, app.getDriveId());
                 ps.setInt(2, app.getStudentId());
@@ -156,7 +114,6 @@ public class ApplicationDAO {
                 }
             }
 
-            // Step 2: Insert Audit Log on the SAME connection
             AuditLog auditEntry = new AuditLog();
             try {
                 auditEntry.setEntityName("APPLICATION");
@@ -170,52 +127,40 @@ public class ApplicationDAO {
 
             auditLogDAO.insert(conn, auditEntry);
 
-            // Simulated failure trigger for testing transaction rollback
             if (simulateFailure) {
                 throw new SQLException("[TEST] Simulated database failure occurred prior to commit. Triggering rollback!");
             }
 
-            /*
-             * VIVA POINT: commit() persists both the application and audit log atomically.
-             */
             conn.commit();
             return app;
 
         } catch (SQLException e) {
-            /*
-             * VIVA POINT: rollback() undoes all changes made during this transaction.
-             * Neither the application record nor the audit log record will remain in MySQL.
-             */
+            // rollback on error
             if (conn != null) {
                 try {
                     conn.rollback();
-                    System.out.println("[ApplicationDAO] Transaction rolled back successfully due to error: " + e.getMessage());
                 } catch (SQLException ex) {
-                    System.err.println("[ApplicationDAO] Critical: Rollback failed: " + ex.getMessage());
+                    System.err.println("Rollback failed: " + ex.getMessage());
                 }
             }
+            // check duplicate key
             if ("23000".equals(e.getSQLState()) || e.getErrorCode() == 1062) {
                 throw new DuplicateRecordException("Student has already applied to this placement drive: " + e.getMessage(), e);
             }
             throw e;
         } finally {
-            /*
-             * VIVA POINT: Always reset autoCommit back to true and safely close the connection.
-             */
+            // reset autocommit
             if (conn != null) {
                 try {
                     conn.setAutoCommit(true);
                     conn.close();
                 } catch (SQLException ex) {
-                    System.err.println("[ApplicationDAO] Error resetting auto-commit or closing connection: " + ex.getMessage());
+                    System.err.println("Error closing connection: " + ex.getMessage());
                 }
             }
         }
     }
 
-    /**
-     * Finds an application by ID.
-     */
     public Optional<Application> findById(int applicationId) throws SQLException, InvalidDataException {
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(SQL_FIND_BY_ID)) {
@@ -230,9 +175,6 @@ public class ApplicationDAO {
         return Optional.empty();
     }
 
-    /**
-     * Finds applications submitted by a specific student.
-     */
     public List<Application> findByStudentId(int studentId) throws SQLException, InvalidDataException {
         List<Application> list = new ArrayList<>();
         try (Connection conn = DBConnection.getConnection();
@@ -248,9 +190,6 @@ public class ApplicationDAO {
         return list;
     }
 
-    /**
-     * Finds applications for a specific placement drive.
-     */
     public List<Application> findByDriveId(int driveId) throws SQLException, InvalidDataException {
         List<Application> list = new ArrayList<>();
         try (Connection conn = DBConnection.getConnection();
@@ -266,9 +205,6 @@ public class ApplicationDAO {
         return list;
     }
 
-    /**
-     * Finds a specific application by drive ID and student ID.
-     */
     public Optional<Application> findByDriveAndStudent(int driveId, int studentId) throws SQLException, InvalidDataException {
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(SQL_FIND_BY_DRIVE_AND_STUDENT)) {
@@ -284,9 +220,6 @@ public class ApplicationDAO {
         return Optional.empty();
     }
 
-    /**
-     * Updates an application's review/interview status and feedback.
-     */
     public boolean updateStatus(int applicationId, ApplicationStatus status, String feedback)
             throws SQLException, RecordNotFoundException {
 
@@ -305,9 +238,6 @@ public class ApplicationDAO {
         }
     }
 
-    /**
-     * Permanently deletes an application by ID.
-     */
     public boolean delete(int applicationId) throws SQLException, RecordNotFoundException {
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(SQL_DELETE)) {

@@ -20,21 +20,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-/**
- * ============================================================================
- * VIVA EVALUATION REFERENCE - ATOMIC JDBC TRANSACTION MANAGEMENT:
- * ============================================================================
- * 1. TRANSACTION DEMONSTRATION (ENROLLMENT + AUDIT_LOG):
- *    - In an educational management system, enrolling a student into a class is a
- *      state-changing action that requires an immutable audit trail.
- *    - If the student enrollment succeeds but the audit log fails (e.g. out of memory,
- *      constraint failure), the system would enter an unaudited inconsistent state.
- *    - By enclosing both statements inside `conn.setAutoCommit(false)` and passing
- *      the active `conn` to both operations, atomicity is guaranteed:
- *      * Success -> `conn.commit()`
- *      * Failure -> `conn.rollback()`
- * ============================================================================
- */
 public class ClassEnrollmentDAO {
 
     private static final String SQL_INSERT =
@@ -68,9 +53,6 @@ public class ClassEnrollmentDAO {
 
     private final AuditLogDAO auditLogDAO = new AuditLogDAO();
 
-    /**
-     * Standard non-transactional enroll method.
-     */
     public ClassEnrollment enroll(ClassEnrollment enrollment) throws SQLException, DuplicateRecordException {
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(SQL_INSERT, Statement.RETURN_GENERATED_KEYS)) {
@@ -94,6 +76,7 @@ public class ClassEnrollmentDAO {
             }
             return enrollment;
         } catch (SQLException e) {
+            // check duplicate key
             if ("23000".equals(e.getSQLState()) || e.getErrorCode() == 1062) {
                 throw new DuplicateRecordException("Student is already enrolled in this class: " + e.getMessage(), e);
             }
@@ -101,22 +84,11 @@ public class ClassEnrollmentDAO {
         }
     }
 
-    /**
-     * ATOMIC TRANSACTION: Enrolls a student into a class AND writes an AUDIT_LOG entry
-     * using the same Connection.
-     */
     public ClassEnrollment enrollStudentWithAudit(ClassEnrollment enrollment, String performedBy)
             throws SQLException, DuplicateRecordException {
         return enrollStudentWithAudit(enrollment, performedBy, false);
     }
 
-    /**
-     * ATOMIC TRANSACTION with optional simulated failure to demonstrate and verify ROLLBACK.
-     *
-     * @param enrollment      the enrollment entity.
-     * @param performedBy     the user/officer performing enrollment.
-     * @param simulateFailure if true, throws an exception prior to commit to trigger rollback.
-     */
     public ClassEnrollment enrollStudentWithAudit(ClassEnrollment enrollment, String performedBy, boolean simulateFailure)
             throws SQLException, DuplicateRecordException {
 
@@ -128,12 +100,9 @@ public class ClassEnrollmentDAO {
         try {
             conn = DBConnection.getConnection();
 
-            /*
-             * VIVA POINT: Step 1 - Disable auto-commit to begin multi-statement transaction boundary.
-             */
+            // begin transaction
             conn.setAutoCommit(false);
 
-            // Step 2: Insert into CLASS_ENROLLMENT
             try (PreparedStatement ps = conn.prepareStatement(SQL_INSERT, Statement.RETURN_GENERATED_KEYS)) {
                 ps.setInt(1, enrollment.getClassId());
                 ps.setInt(2, enrollment.getStudentId());
@@ -154,7 +123,6 @@ public class ClassEnrollmentDAO {
                 }
             }
 
-            // Step 3: Insert into AUDIT_LOG on the EXACT SAME connection
             AuditLog auditLog = new AuditLog();
             try {
                 auditLog.setEntityName("CLASS_ENROLLMENT");
@@ -168,51 +136,40 @@ public class ClassEnrollmentDAO {
 
             auditLogDAO.insert(conn, auditLog);
 
-            // Simulated failure trigger for testing transaction rollback
             if (simulateFailure) {
                 throw new SQLException("[TEST] Simulated database failure during enrollment transaction. Triggering rollback!");
             }
 
-            /*
-             * VIVA POINT: Step 4 - Commit atomically persisted changes.
-             */
             conn.commit();
             return enrollment;
 
         } catch (SQLException e) {
-            /*
-             * VIVA POINT: Step 5 - Rollback on error leaves database in clean initial state.
-             */
+            // rollback on error
             if (conn != null) {
                 try {
                     conn.rollback();
-                    System.out.println("[ClassEnrollmentDAO] Transaction rolled back successfully: " + e.getMessage());
                 } catch (SQLException ex) {
-                    System.err.println("[ClassEnrollmentDAO] Critical: Rollback failed: " + ex.getMessage());
+                    System.err.println("Rollback failed: " + ex.getMessage());
                 }
             }
+            // check duplicate key
             if ("23000".equals(e.getSQLState()) || e.getErrorCode() == 1062) {
                 throw new DuplicateRecordException("Student is already enrolled in this class: " + e.getMessage(), e);
             }
             throw e;
         } finally {
-            /*
-             * VIVA POINT: Step 6 - Restore auto-commit state and close connection.
-             */
+            // reset autocommit
             if (conn != null) {
                 try {
                     conn.setAutoCommit(true);
                     conn.close();
                 } catch (SQLException ex) {
-                    System.err.println("[ClassEnrollmentDAO] Error restoring auto-commit or closing connection: " + ex.getMessage());
+                    System.err.println("Error closing connection: " + ex.getMessage());
                 }
             }
         }
     }
 
-    /**
-     * Finds enrollment by ID.
-     */
     public Optional<ClassEnrollment> findById(int enrollmentId) throws SQLException, InvalidDataException {
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(SQL_FIND_BY_ID)) {
@@ -227,9 +184,6 @@ public class ClassEnrollmentDAO {
         return Optional.empty();
     }
 
-    /**
-     * Finds enrollment by class ID and student ID.
-     */
     public Optional<ClassEnrollment> findByClassAndStudent(int classId, int studentId) throws SQLException, InvalidDataException {
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(SQL_FIND_BY_CLASS_AND_STUDENT)) {
@@ -245,9 +199,6 @@ public class ClassEnrollmentDAO {
         return Optional.empty();
     }
 
-    /**
-     * Retrieves all student enrollments for a given class.
-     */
     public List<ClassEnrollment> findEnrollmentsByClassId(int classId) throws SQLException, InvalidDataException {
         List<ClassEnrollment> list = new ArrayList<>();
         try (Connection conn = DBConnection.getConnection();
@@ -263,9 +214,6 @@ public class ClassEnrollmentDAO {
         return list;
     }
 
-    /**
-     * Retrieves all class enrollments for a given student.
-     */
     public List<ClassEnrollment> findEnrollmentsByStudentId(int studentId) throws SQLException, InvalidDataException {
         List<ClassEnrollment> list = new ArrayList<>();
         try (Connection conn = DBConnection.getConnection();
@@ -281,9 +229,6 @@ public class ClassEnrollmentDAO {
         return list;
     }
 
-    /**
-     * Updates attendance percentage and final grade for an enrollment.
-     */
     public boolean updateAttendanceAndGrade(int enrollmentId, double attendance, String grade)
             throws SQLException, RecordNotFoundException {
 
@@ -302,9 +247,6 @@ public class ClassEnrollmentDAO {
         }
     }
 
-    /**
-     * Updates enrollment status (ENROLLED, COMPLETED, DROPPED).
-     */
     public boolean updateStatus(int enrollmentId, EnrollmentStatus status) throws SQLException, RecordNotFoundException {
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(SQL_UPDATE_STATUS)) {
@@ -320,9 +262,6 @@ public class ClassEnrollmentDAO {
         }
     }
 
-    /**
-     * Permanently deletes an enrollment by ID.
-     */
     public boolean delete(int enrollmentId) throws SQLException, RecordNotFoundException {
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(SQL_DELETE)) {

@@ -41,13 +41,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * End-to-End Integration Test simulating a full university cross-role lifecycle:
- * 1. FACULTY ROLE: Create course, upload learning materials, author & publish quiz.
- * 2. STUDENT ROLE: Enroll with atomic audit log, access study materials, submit quiz, apply for job.
- * 3. ADMIN ROLE: Register company, create drive, review applicants, promote to OFFERED, inspect audit trail.
- * 4. CLEANUP: Complete teardown guaranteeing seed data preservation.
- */
 public class Step5EndToEndTest {
 
     private static final String EVIDENCE_FILE = "evidence/step5_verification.txt";

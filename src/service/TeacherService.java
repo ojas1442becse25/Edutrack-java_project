@@ -12,10 +12,6 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
 
-/**
- * Service Layer class encapsulating teacher onboarding, profile management,
- * and course allocation lookups.
- */
 public class TeacherService {
 
     private final TeacherDAO teacherDAO;
@@ -31,10 +27,7 @@ public class TeacherService {
         this.classDAO = classDAO;
     }
 
-    /**
-     * Registers a new teacher after validating business rules.
-     */
-    public Teacher registerTeacher(Teacher teacher)
+        public Teacher registerTeacher(Teacher teacher)
             throws InvalidDataException, DuplicateRecordException, SQLException {
 
         if (teacher == null) {
@@ -49,10 +42,7 @@ public class TeacherService {
         return teacherDAO.create(teacher);
     }
 
-    /**
-     * Updates an existing teacher profile.
-     */
-    public boolean updateTeacher(Teacher teacher)
+        public boolean updateTeacher(Teacher teacher)
             throws InvalidDataException, DuplicateRecordException, RecordNotFoundException, SQLException {
 
         if (teacher == null || teacher.getTeacherId() == null) {
@@ -63,10 +53,7 @@ public class TeacherService {
         return teacherDAO.update(teacher);
     }
 
-    /**
-     * Finds a teacher by primary key ID.
-     */
-    public Teacher getTeacherById(int teacherId)
+        public Teacher getTeacherById(int teacherId)
             throws RecordNotFoundException, SQLException, InvalidDataException {
 
         Optional<Teacher> teacher = teacherDAO.findById(teacherId);
@@ -76,10 +63,7 @@ public class TeacherService {
         return teacher.get();
     }
 
-    /**
-     * Finds a teacher by email address.
-     */
-    public Teacher getTeacherByEmail(String email)
+        public Teacher getTeacherByEmail(String email)
             throws RecordNotFoundException, SQLException, InvalidDataException {
 
         if (email == null || email.trim().isEmpty()) {
@@ -92,17 +76,11 @@ public class TeacherService {
         return teacher.get();
     }
 
-    /**
-     * Retrieves all registered teachers.
-     */
-    public List<Teacher> getAllTeachers() throws SQLException, InvalidDataException {
+        public List<Teacher> getAllTeachers() throws SQLException, InvalidDataException {
         return teacherDAO.findAll();
     }
 
-    /**
-     * Retrieves teachers belonging to a specific academic department.
-     */
-    public List<Teacher> getTeachersByDepartment(String department)
+        public List<Teacher> getTeachersByDepartment(String department)
             throws InvalidDataException, SQLException {
 
         if (department == null || department.trim().isEmpty()) {
@@ -111,20 +89,14 @@ public class TeacherService {
         return teacherDAO.findByDepartment(department.trim());
     }
 
-    /**
-     * Retrieves all classes/course sections assigned to an instructor.
-     */
-    public List<ClassEntity> getAssignedClasses(int teacherId)
+        public List<ClassEntity> getAssignedClasses(int teacherId)
             throws RecordNotFoundException, SQLException, InvalidDataException {
 
         getTeacherById(teacherId);
         return classDAO.findClassesByTeacherId(teacherId);
     }
 
-    /**
-     * Deletes a teacher record.
-     */
-    public boolean deleteTeacher(int teacherId) throws RecordNotFoundException, SQLException {
+        public boolean deleteTeacher(int teacherId) throws RecordNotFoundException, SQLException {
         return teacherDAO.delete(teacherId);
     }
 }

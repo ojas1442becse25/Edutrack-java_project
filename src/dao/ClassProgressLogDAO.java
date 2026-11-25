@@ -16,9 +16,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-/**
- * Data Access Object for the CLASS_PROGRESS_LOG table.
- */
 public class ClassProgressLogDAO {
 
     private static final String SQL_INSERT =
@@ -36,10 +33,7 @@ public class ClassProgressLogDAO {
     private static final String SQL_DELETE =
             "DELETE FROM CLASS_PROGRESS_LOG WHERE log_id = ?";
 
-    /**
-     * Inserts a new teaching progress log entry.
-     */
-    public ClassProgressLog create(ClassProgressLog log) throws SQLException {
+        public ClassProgressLog create(ClassProgressLog log) throws SQLException {
         if (log == null) {
             throw new IllegalArgumentException("ClassProgressLog cannot be null.");
         }
@@ -67,10 +61,7 @@ public class ClassProgressLogDAO {
         }
     }
 
-    /**
-     * Finds a progress log by ID.
-     */
-    public Optional<ClassProgressLog> findById(int logId) throws SQLException, InvalidDataException {
+        public Optional<ClassProgressLog> findById(int logId) throws SQLException, InvalidDataException {
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(SQL_FIND_BY_ID)) {
 
@@ -84,10 +75,7 @@ public class ClassProgressLogDAO {
         return Optional.empty();
     }
 
-    /**
-     * Retrieves all progress logs recorded for a specific class.
-     */
-    public List<ClassProgressLog> findByClassId(int classId) throws SQLException, InvalidDataException {
+        public List<ClassProgressLog> findByClassId(int classId) throws SQLException, InvalidDataException {
         List<ClassProgressLog> list = new ArrayList<>();
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(SQL_FIND_BY_CLASS)) {
@@ -102,10 +90,7 @@ public class ClassProgressLogDAO {
         return list;
     }
 
-    /**
-     * Deletes a progress log by ID.
-     */
-    public boolean delete(int logId) throws SQLException, RecordNotFoundException {
+        public boolean delete(int logId) throws SQLException, RecordNotFoundException {
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(SQL_DELETE)) {
 

@@ -4,9 +4,6 @@ import exception.InvalidDataException;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
-/**
- * Domain model representing the STUDENT table.
- */
 public class Student {
 
     public enum StudentStatus {

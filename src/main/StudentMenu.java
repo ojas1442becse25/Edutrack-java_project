@@ -22,10 +22,6 @@ import util.MenuUtils;
 import java.sql.SQLException;
 import java.util.List;
 
-/**
- * Presentation Layer: Student Console Self-Service Portal.
- * Handles course review, academic progress, quiz attempts, and placement drive applications.
- */
 public class StudentMenu {
 
     private final StudentService studentService;
@@ -134,7 +130,7 @@ public class StudentMenu {
                     continue;
                 }
                 for (ClassResource r : resources) {
-                    System.out.printf("  • [%-10s] %-32s -> Link: %s%n",
+                    System.out.printf("  â€¢ [%-10s] %-32s -> Link: %s%n",
                             r.getResourceType(), r.getTitle(), r.getResourceUrl());
                 }
             }
@@ -206,9 +202,9 @@ public class StudentMenu {
             PlacementDrive drive = placementService.getDriveById(driveId);
 
             System.out.println("\nApplication Criteria:");
-            System.out.println("  • Minimum CGPA Cutoff : " + drive.getMinCgpaCriteria());
-            System.out.println("  • Eligible Department : " + drive.getEligibleDepartment());
-            System.out.println("  • Last Date to Apply  : " + drive.getLastDateToApply());
+            System.out.println("  â€¢ Minimum CGPA Cutoff : " + drive.getMinCgpaCriteria());
+            System.out.println("  â€¢ Eligible Department : " + drive.getEligibleDepartment());
+            System.out.println("  â€¢ Last Date to Apply  : " + drive.getLastDateToApply());
 
             if (validator.readConfirmation("\nConfirm submission of job application?")) {
                 // Thread-safe application invocation

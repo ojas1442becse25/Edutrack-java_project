@@ -23,15 +23,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
 
-/**
- * Standalone test runner for verifying Step 2 deliverables:
- * - Domain model validation rules
- * - Full CRUD operations across TeacherDAO, StudentDAO, and ClassDAO
- * - Unique constraint handling (DuplicateRecordException)
- * - Record not found handling (RecordNotFoundException)
- * - Automatic cleanup of test entities to preserve database seed state
- * - Automatic recording of logs to evidence/step2_verification.txt
- */
 public class Step2DAOTest {
 
     private static final String EVIDENCE_FILE = "evidence/step2_verification.txt";
@@ -405,10 +396,7 @@ public class Step2DAOTest {
         System.err.println("  [FAIL] " + message + (t != null ? " (" + t.getMessage() + ")" : ""));
     }
 
-    /**
-     * Utility OutputStream to multiplex output between console and file.
-     */
-    private static class TeeOutputStream extends java.io.OutputStream {
+        private static class TeeOutputStream extends java.io.OutputStream {
         private final java.io.OutputStream out1;
         private final java.io.OutputStream out2;
 

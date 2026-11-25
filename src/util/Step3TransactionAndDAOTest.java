@@ -40,17 +40,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
 
-/**
- * Verification test runner for Step 3 deliverables:
- * - Tests full CRUD across remaining 9 DAOs:
- *   CompanyDAO, PlacementDriveDAO, ApplicationDAO, AuditLogDAO,
- *   ClassEnrollmentDAO, ClassProgressLogDAO, ClassResourceDAO,
- *   QuizDAO, QuizSubmissionDAO
- * - Demonstrates multi-step atomic COMMIT transactions (Main Record + Audit Log)
- * - Demonstrates forced-failure ROLLBACK transactions (Zero partial data saved)
- * - Automated cleanup preserving seed data integrity
- * - Generates report in evidence/step3_verification.txt
- */
 public class Step3TransactionAndDAOTest {
 
     private static final String EVIDENCE_FILE = "evidence/step3_verification.txt";

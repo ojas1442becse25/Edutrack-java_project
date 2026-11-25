@@ -59,15 +59,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
-/**
- * Comprehensive verification test runner for Step 4 deliverables:
- * - 5 Service Classes (StudentService, TeacherService, ClassService, QuizService, PlacementService)
- * - Business rule enforcement and custom exceptions (EligibilityException, DuplicateRecordException, InvalidDataException)
- * - Academic analytics and at-risk student detection
- * - Thread-safe synchronized slot allocation under high concurrency (5 simultaneous threads competing for 2 slots)
- * - Verification of zero partial data / zero over-allocation
- * - Automatic cleanup ensuring database seed data integrity
- */
 public class Step4ServiceAndConcurrencyTest {
 
     private static final String EVIDENCE_FILE = "evidence/step4_verification.txt";
